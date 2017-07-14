@@ -95,7 +95,7 @@ public class Cocktail {
 		this.thumbnailUrl = thumbnailUrl;
 	}
 
-	List<Recipe> getRecipes() {
+	public List<Recipe> getRecipes() {
 		return Recipes;
 	}
 
@@ -166,18 +166,14 @@ public class Cocktail {
             setHowTo(jsonCocktailObject.getString("HOWTO"));
             setMethod(jsonCocktailObject.getString("METHOD"));
             setGrass(jsonCocktailObject.getString("GRASS"));
-            setAlcoholDegree(Float.valueOf(jsonCocktailObject.getString("ALCOHOLDEGREE")));
+            setAlcoholDegree((float) jsonCocktailObject.getDouble("ALCOHOLDEGREE"));
             // レシピ情報部
             List<Recipe> recipeList = new ArrayList<>();
             SpannableStringBuilder recipeString = new SpannableStringBuilder();
             JSONArray jsonRecipeArray = jsonCocktailObject.getJSONArray("RECIPES");
             if (jsonRecipeArray.length() > 0) {
-                // TODO 所持マークは保留(アダプタに実装する)
-//                HavingProductDAO havingProductDAO = new HavingProductDAO(mContext);
                 for (int j = 0; j < jsonRecipeArray.length(); j++) {
                     Recipe recipe = new Recipe();
-//                    TextAppearanceSpan textAppearanceSpan =	new TextAppearanceSpan(
-//                            mContext.getApplicationContext(), R.style.ListViewHaveItem);
                     JSONObject jsonRecipeObject = jsonRecipeArray.getJSONObject(j);
                     recipe.setId(jsonRecipeObject.getString("ID"));
                     recipe.setCocktailID(jsonRecipeObject.getString("COCKTAILID"));
@@ -193,21 +189,8 @@ public class Cocktail {
                     if (j > 0) {
                         recipeString.append("／");
                     }
-//                    if (havingProductDAO.ExistMaterialID(jsonRecipeObject.getString("MATERIALID"))) {
-//                        // 所持商品と一致した場合は文字色を設定
-//                        int startPos = recipeString.length();
-//                        recipeString.append(jsonRecipeObject.getString("NAME"));
-//                        recipeString.setSpan(
-//                                textAppearanceSpan,
-//                                startPos,
-//                                recipeString.length(),
-//                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-//                        );
-//                    } else {
-                        recipeString.append(jsonRecipeObject.getString("NAME"));
-//                    }
+                    recipeString.append(jsonRecipeObject.getString("NAME"));
                 }
-//                havingProductDAO.close();
             } else {
                 recipeString.append("レシピ準備中");
             }
@@ -217,5 +200,4 @@ public class Cocktail {
             e.printStackTrace();
         }
     }
-
 }
