@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="jp.ecweb.homes.a1601">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/appicon48"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".A0201_ProductToCocktailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".A0202_ProductListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CocktailListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".A0302_CocktailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CocktailListItemActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RecipeListItemActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ProductListItemActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".A0203_ProductActivity"
+            android:screenOrientation="portrait"/>
+    </application>
+
+</manifest>
