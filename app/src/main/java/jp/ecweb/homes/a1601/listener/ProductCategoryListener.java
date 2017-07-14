@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import jp.ecweb.homes.a1601.callback.ProductListCallbacks;
-import jp.ecweb.homes.a1601.model.Category;
+import jp.ecweb.homes.a1601.Category;
 
 /**
  * Created by KakinumaTakashi on 2016/09/06.

@@ -86,6 +86,7 @@ class HttpConnectionManager {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        CustomLog.d(TAG, "Server connection success [response:" + response.toString() + "]");
                         HttpResult result = new HttpResult();
                         result.setSuccess(true);
                         result.setStatusCode(200);
@@ -97,6 +98,7 @@ class HttpConnectionManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        CustomLog.d(TAG, "Server connection failure");
                         HttpResult result = new HttpResult();
                         result.setSuccess(false);
                         result.setStatusCode(error.networkResponse != null ? error.networkResponse.statusCode : -1);

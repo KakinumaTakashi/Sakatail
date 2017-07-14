@@ -9,8 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.model.Category;
-import jp.ecweb.homes.a1601.model.Cocktail;
 import jp.ecweb.homes.a1601.model.Favorite;
 
 /**
@@ -24,20 +22,36 @@ abstract class HttpCocktailListBase {
     Category mCategory;
     List<Favorite> mFavoriteList;
 
+    /**
+     * コンストラクタ
+     * @param context       コンテキスト
+     */
     HttpCocktailListBase(Context context) {
         mContext = context;
     }
 
+    /**
+     * カテゴリ設定
+     * @param category      カテゴリ情報
+     */
     void setCategory(Category category) {
         mCategory = category;
     }
 
+    /**
+     * お気に入り設定
+     * @param favoriteList  お気に入り情報
+     */
     void setFavoriteList(List<Favorite> favoriteList) {
         mFavoriteList = favoriteList;
     }
 
-    abstract JSONObject createRequest();
-
+    /**
+     * POSTリクエスト送信
+     * @param url           送信先URL
+     * @param request       リクエストデータ
+     * @param listener      通信完了リスナー
+     */
     void post(String url, final JSONObject request, final HttpCocktailListListener listener) {
         HttpConnectionManager manager = new HttpConnectionManager(mContext);
         boolean result = manager.post(url, request, new HttpConnectionListener() {

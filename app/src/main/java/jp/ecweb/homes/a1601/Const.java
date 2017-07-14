@@ -13,9 +13,10 @@ final class Const {
     static final String RANKUTEN_CREDIT_CONTENTS = "file:///android_asset/rakutencredit.html";
 
     /** WEB API エンドポイント **/
-    static final String WEBAPI_COCKTAIL     = "getCocktailList.php";
+    static final String WEBAPI_COCKTAILLIST = "getCocktailList.php";
     static final String WEBAPI_FAVORITE     = "getFavoriteCocktailList.php";
     static final String WEBAPI_CATEGORY     = "getCocktailCategory.php";
+    static final String WEBAPI_COCKTAIL     = "getCocktail.php";
 
     /** レスポンスJSON **/
     // 共通部キー定義

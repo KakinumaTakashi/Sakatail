@@ -19,7 +19,7 @@ import java.util.List;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.callback.CocktailListCallbacks;
 import jp.ecweb.homes.a1601.dao.HavingProductDAO;
-import jp.ecweb.homes.a1601.model.Cocktail;
+import jp.ecweb.homes.a1601.Cocktail;
 import jp.ecweb.homes.a1601.model.Recipe;
 
 /**

@@ -2,8 +2,6 @@ package jp.ecweb.homes.a1601;
 
 import java.util.List;
 
-import jp.ecweb.homes.a1601.model.Cocktail;
-
 /**
  * カクテル一覧コールバック
  */

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.callback.CocktailCallbacks;
-import jp.ecweb.homes.a1601.model.Cocktail;
+import jp.ecweb.homes.a1601.Cocktail;
 import jp.ecweb.homes.a1601.model.Recipe;
 
 /**

@@ -27,8 +27,6 @@ import jp.ecweb.homes.a1601.Adapter.CocktailListAdapter;
 import jp.ecweb.homes.a1601.callback.CocktailListCallbacks;
 import jp.ecweb.homes.a1601.dao.HavingProductDAO;
 import jp.ecweb.homes.a1601.listener.CocktailListListener;
-import jp.ecweb.homes.a1601.model.Cocktail;
-import jp.ecweb.homes.a1601.model.Category;
 import jp.ecweb.homes.a1601.model.HavingProduct;
 
 public class A0201_ProductToCocktailActivity extends AppCompatActivity implements CocktailListCallbacks {
@@ -89,7 +87,7 @@ public class A0201_ProductToCocktailActivity extends AppCompatActivity implement
 						// 詳細画面に遷移(タップされたカクテルIDを引き渡す)
 						Intent intent = new Intent(
 								A0201_ProductToCocktailActivity.this,
-								A0302_CocktailActivity.class);
+								CocktailActivity.class);
 						intent.putExtra("ID", cocktail.getId());
 						startActivity(intent);
 					}

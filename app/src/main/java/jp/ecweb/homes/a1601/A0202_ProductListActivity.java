@@ -30,7 +30,6 @@ import jp.ecweb.homes.a1601.callback.ProductListCallbacks;
 import jp.ecweb.homes.a1601.dao.HavingProductDAO;
 import jp.ecweb.homes.a1601.listener.ProductCategoryListener;
 import jp.ecweb.homes.a1601.listener.ProductListListener;
-import jp.ecweb.homes.a1601.model.Category;
 import jp.ecweb.homes.a1601.model.HavingProduct;
 import jp.ecweb.homes.a1601.model.Product;
 

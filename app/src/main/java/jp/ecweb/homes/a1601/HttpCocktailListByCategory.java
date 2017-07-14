@@ -10,12 +10,28 @@ import org.json.JSONObject;
  */
 class HttpCocktailListByCategory extends HttpCocktailListBase {
 
+    /**
+     * コンストラクタ
+     * @param context       コンテキスト
+     */
     HttpCocktailListByCategory(Context context) {
         super(context);
     }
 
-    @Override
-    JSONObject createRequest() {
+    /**
+     * POSTリクエスト送信
+     * @param listener      通信完了リスナー
+     */
+    void post(HttpCocktailListListener listener) {
+        String url = mContext.getString(R.string.server_URL) + Const.WEBAPI_COCKTAILLIST;
+        super.post(url, createRequest(), listener);
+    }
+
+    /**
+     * リクエスト生成
+     * @return              リクエスト
+     */
+    private JSONObject createRequest() {
         JSONObject postData = new JSONObject();
         try {
             postData.put("Category1", mCategory.getCategory1());
@@ -24,10 +40,5 @@ class HttpCocktailListByCategory extends HttpCocktailListBase {
             e.printStackTrace();
         }
         return postData;
-    }
-
-    void post(HttpCocktailListListener listener) {
-        String url = mContext.getString(R.string.server_URL) + Const.WEBAPI_COCKTAIL;
-        super.post(url, createRequest(), listener);
     }
 }

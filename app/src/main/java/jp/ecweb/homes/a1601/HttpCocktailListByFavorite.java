@@ -10,13 +10,28 @@ import org.json.JSONObject;
  */
 class HttpCocktailListByFavorite extends HttpCocktailListBase {
 
+    /**
+     * コンストラクタ
+     * @param context       コンテキスト
+     */
     HttpCocktailListByFavorite(Context context) {
         super(context);
     }
 
-    @Override
-    JSONObject createRequest() {
-        // POSTデータの作成
+    /**
+     * POSTリクエスト送信
+     * @param listener      通信完了リスナー
+     */
+    void post(HttpCocktailListListener listener) {
+        String url = mContext.getString(R.string.server_URL) + Const.WEBAPI_FAVORITE;
+        super.post(url, createRequest(), listener);
+    }
+
+    /**
+     * リクエスト生成
+     * @return              リクエスト
+     */
+    private JSONObject createRequest() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < mFavoriteList.size(); i++) {
             if (i > 0) {
@@ -31,10 +46,5 @@ class HttpCocktailListByFavorite extends HttpCocktailListBase {
             e.printStackTrace();
         }
         return postData;
-    }
-
-    void post(HttpCocktailListListener listener) {
-        String url = mContext.getString(R.string.server_URL) + Const.WEBAPI_FAVORITE;
-        super.post(url, createRequest(), listener);
     }
 }

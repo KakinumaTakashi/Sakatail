@@ -5,8 +5,6 @@ import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jp.ecweb.homes.a1601.model.Category;
-
 /**
  * カテゴリ一覧取得クラス
  */
@@ -15,10 +13,18 @@ class HttpCocktailCategory {
 
     private Context mContext;
 
+    /**
+     * コンストラクタ
+     * @param context       コンテキスト
+     */
     HttpCocktailCategory(Context context) {
         mContext = context;
     }
 
+    /**
+     * GETリクエスト送信
+     * @param listener      通信完了リスナー
+     */
     void get(final HttpCocktailCategoryListener listener) {
         String url = mContext.getString(R.string.server_URL) + Const.WEBAPI_CATEGORY;
         HttpConnectionManager manager = new HttpConnectionManager(mContext);

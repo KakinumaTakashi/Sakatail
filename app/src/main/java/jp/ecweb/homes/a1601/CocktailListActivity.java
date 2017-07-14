@@ -17,8 +17,6 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.Adapter.CocktailListAdapter;
 import jp.ecweb.homes.a1601.dao.FavoriteDAO;
-import jp.ecweb.homes.a1601.model.Cocktail;
-import jp.ecweb.homes.a1601.model.Category;
 
 
 public class CocktailListActivity extends AppCompatActivity implements HttpCocktailListListener {
@@ -58,7 +56,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 						Cocktail cocktail = (Cocktail) parent.getItemAtPosition(position);
 						CustomLog.d(TAG, "Select Cocktail=" + "ID:" + cocktail.getId() + "/Name:" + cocktail.getName());
 						// 詳細画面に遷移(タップされたカクテルIDを引き渡す)
-						Intent intent = new Intent(CocktailListActivity.this, A0302_CocktailActivity.class);
+						Intent intent = new Intent(CocktailListActivity.this, CocktailActivity.class);
 						intent.putExtra("ID", cocktail.getId());
 						startActivity(intent);
 					}

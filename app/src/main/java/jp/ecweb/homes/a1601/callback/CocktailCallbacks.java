@@ -1,6 +1,6 @@
 package jp.ecweb.homes.a1601.callback;
 
-import jp.ecweb.homes.a1601.model.Cocktail;
+import jp.ecweb.homes.a1601.Cocktail;
 
 /**
  * カクテル情報　コールバックインターフェイス

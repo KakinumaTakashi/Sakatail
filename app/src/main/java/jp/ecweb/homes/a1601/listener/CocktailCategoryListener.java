@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import jp.ecweb.homes.a1601.callback.CocktailListCallbacks;
-import jp.ecweb.homes.a1601.model.Category;
+import jp.ecweb.homes.a1601.Category;
 
 /**
  * カクテル一覧受信処理クラス

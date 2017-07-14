@@ -2,7 +2,7 @@ package jp.ecweb.homes.a1601.callback;
 
 import java.util.List;
 
-import jp.ecweb.homes.a1601.model.Category;
+import jp.ecweb.homes.a1601.Category;
 import jp.ecweb.homes.a1601.model.Product;
 
 /**

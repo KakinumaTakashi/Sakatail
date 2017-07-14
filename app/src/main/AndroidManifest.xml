@@ -31,7 +31,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".CocktailListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".A0302_CocktailActivity"
+        <activity android:name=".CocktailActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".CocktailListItemActivity"
             android:screenOrientation="portrait"/>

@@ -14,7 +14,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.dao.FavoriteDAO;
-import jp.ecweb.homes.a1601.model.Cocktail;
+import jp.ecweb.homes.a1601.Cocktail;
 import jp.ecweb.homes.a1601.VolleyManager;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.model.Favorite;
