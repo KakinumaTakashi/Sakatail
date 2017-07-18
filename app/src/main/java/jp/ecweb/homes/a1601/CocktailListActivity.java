@@ -15,7 +15,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Adapter.CocktailListAdapter;
 import jp.ecweb.homes.a1601.dao.FavoriteDAO;
 
 

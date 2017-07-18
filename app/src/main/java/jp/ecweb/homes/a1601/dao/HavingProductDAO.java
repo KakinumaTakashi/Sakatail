@@ -8,8 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.helper.MySQLiteOpenHelper;
-import jp.ecweb.homes.a1601.model.Favorite;
+import jp.ecweb.homes.a1601.SQLiteHelper;
 import jp.ecweb.homes.a1601.model.HavingProduct;
 
 /**
@@ -25,8 +24,8 @@ public class HavingProductDAO {
 	コンストラクタ
 --------------------------------------------------------------------------------------------------*/
 	public HavingProductDAO(Context context) {
-		MySQLiteOpenHelper mySQLiteOpenHelper = new MySQLiteOpenHelper(context);
-		this.mDb = mySQLiteOpenHelper.getWritableDatabase();
+		SQLiteHelper SQLiteHelper = new SQLiteHelper(context);
+		this.mDb = SQLiteHelper.getWritableDatabase();
 	}
 
 

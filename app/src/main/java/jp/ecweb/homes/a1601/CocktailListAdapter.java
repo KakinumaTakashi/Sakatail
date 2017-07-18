@@ -1,11 +1,10 @@
-package jp.ecweb.homes.a1601.Adapter;
+package jp.ecweb.homes.a1601;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.TextAppearanceSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,24 +15,16 @@ import android.widget.ToggleButton;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.CustomLog;
 import jp.ecweb.homes.a1601.dao.FavoriteDAO;
-import jp.ecweb.homes.a1601.Cocktail;
-import jp.ecweb.homes.a1601.VolleyManager;
-import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.dao.HavingProductDAO;
 import jp.ecweb.homes.a1601.model.Favorite;
 import jp.ecweb.homes.a1601.model.Recipe;
 
 /**
  * カクテル一覧用アダプタ
- *
- * Created by Takashi Kakinuma on 2016/07/14.
  */
-
 public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 
 	// メンバ変数
@@ -45,10 +36,9 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
     private TextAppearanceSpan mTextAppearanceSpan;
 	private List<Cocktail> mCocktailList;            // カクテル一覧
 
-/*--------------------------------------------------------------------------------------------------
-	インナークラス
---------------------------------------------------------------------------------------------------*/
-	// セルのビュー保存用ビューホルダー
+    /**
+     * セルのビュー保存用ビューホルダー
+     */
 	private class ViewHolder {
 		TextView cocktailNameView;
 		NetworkImageView thumbnailImageView;
@@ -56,10 +46,13 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		ToggleButton favoriteButton;
 	}
 
-/*--------------------------------------------------------------------------------------------------
-	コンストラクタ
---------------------------------------------------------------------------------------------------*/
-	public CocktailListAdapter(Context context, int resource, List<Cocktail> cocktailList) {
+	/**
+	 * コンストラクタ
+	 * @param context       コンテキスト
+	 * @param resource      リソースID
+	 * @param cocktailList  カクテル情報リスト
+	 */
+	CocktailListAdapter(Context context, int resource, List<Cocktail> cocktailList) {
 		super(context, resource, cocktailList);
 
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -70,15 +63,19 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
         mTextAppearanceSpan = new TextAppearanceSpan(context.getApplicationContext(), R.style.ListViewHaveItem);
 	}
 
-/*--------------------------------------------------------------------------------------------------
-	メソッド
---------------------------------------------------------------------------------------------------*/
-	// セル描画
+    /**
+     * セル描画
+     * @param position      リスト上の位置
+     * @param convertView   再利用セルオブジェクト(nullあり)
+     * @param parent        親ビュー
+     * @return              セルオブジェクト
+     */
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull final ViewGroup parent) {
 		ViewHolder holder;
 
+		// 再利用セルオブジェクトがnullの場合はセルオブジェクト作成
 		if (convertView == null) {
 			// セルにリソースを展開
 			convertView = mInflater.inflate(mResourceId, null);
@@ -94,7 +91,8 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 			// タグからビューホルダーのインスタンスを取得
 			holder = (ViewHolder) convertView.getTag();
 		}
-		// 各ビューにカクテル情報を設定
+
+		/* カクテル情報 */
 		Cocktail item = mCocktailList.get(position);
 		// カクテル名
 		holder.cocktailNameView.setText(item.getName());
@@ -108,7 +106,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		} else {
 			holder.thumbnailImageView.setImageUrl(thumbnailUrl, imageLoader);
 		}
-		// レシピ
+		/* レシピ */
         SpannableStringBuilder recipeString = new SpannableStringBuilder();
         List<Recipe> recipes = item.getRecipes();
         for (Recipe recipe : recipes) {
@@ -128,7 +126,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
             }
         }
         holder.recipeView.setText(recipeString);
-        // お気に入り
+        /* お気に入り */
 		// お気に入りテーブルを検索しトグルのチェックを設定
 		String cocktailId = item.getId();
 		if (mFavoriteDAO.ExistCocktailId(cocktailId)) {

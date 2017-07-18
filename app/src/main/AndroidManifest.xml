@@ -33,12 +33,6 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".CocktailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CocktailListItemActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".RecipeListItemActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ProductListItemActivity"
-            android:screenOrientation="portrait"/>
         <activity android:name=".A0203_ProductActivity"
             android:screenOrientation="portrait"/>
     </application>

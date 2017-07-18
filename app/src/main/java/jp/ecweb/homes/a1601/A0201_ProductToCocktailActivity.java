@@ -23,7 +23,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Adapter.CocktailListAdapter;
 import jp.ecweb.homes.a1601.callback.CocktailListCallbacks;
 import jp.ecweb.homes.a1601.dao.HavingProductDAO;
 import jp.ecweb.homes.a1601.listener.CocktailListListener;
