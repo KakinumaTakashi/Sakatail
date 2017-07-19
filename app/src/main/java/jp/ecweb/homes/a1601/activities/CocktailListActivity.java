@@ -17,7 +17,7 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.storage.FavoriteDAO;
+import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.network.HttpCocktailCategory;
@@ -33,7 +33,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	private static final String TAG = CocktailListActivity.class.getSimpleName();
 
 	private CocktailListAdapter mListViewAdapter;					// ListViewアダプター
-	private FavoriteDAO mFavoriteDAO;                               // SQLite お気に入りテーブル
+	private SQLiteFavorite mSQLiteFavorite;                               // SQLite お気に入りテーブル
 
 	private List<Cocktail> mCocktailList = new ArrayList<>();		// カクテル一覧
 	private Category mCategory = new Category();                    // 選択カテゴリ
@@ -51,7 +51,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 		// 広告を表示
 		ExternalServicesLoader.loadAdMob(findViewById(R.id.adView));
 		// メンバ変数の初期化
-		mFavoriteDAO = new FavoriteDAO(this);
+		mSQLiteFavorite = new SQLiteFavorite(this);
 		// ListViewのアダプターを登録
 		mListViewAdapter = new CocktailListAdapter(this, R.layout.activity_cocktail_list_item, mCocktailList);
 		ListView listView = (ListView) findViewById(R.id.listView);
@@ -204,7 +204,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	public void onFavoriteButtonTapped(View view) {
 		// カクテル一覧の取得
         HttpCocktailListByFavorite cocktailList = new HttpCocktailListByFavorite(this);
-        cocktailList.setFavoriteList(mFavoriteDAO.getFavoriteList());
+        cocktailList.setFavoriteList(mSQLiteFavorite.getFavoriteList());
         cocktailList.post(this);
 	}
 /*--------------------------------------------------------------------------------------------------

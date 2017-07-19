@@ -18,12 +18,14 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.storage.FavoriteDAO;
+import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
 import jp.ecweb.homes.a1601.storage.HavingProductDAO;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.Favorite;
 import jp.ecweb.homes.a1601.models.Recipe;
+
+import static jp.ecweb.homes.a1601.utils.Utils.nullToEmpty;
 
 /**
  * カクテル一覧用アダプタ
@@ -34,7 +36,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 	private LayoutInflater mInflater;               // セルレイアウト
 	private int mResourceId;                        // セルに表示するリソースID
 
-	private FavoriteDAO mFavoriteDAO;               // SQLite操作用
+	private SQLiteFavorite mSQLiteFavorite;               // SQLite操作用
     private HavingProductDAO mHavingProductDAO;
     private TextAppearanceSpan mTextAppearanceSpan;
 	private List<Cocktail> mCocktailList;            // カクテル一覧
@@ -61,7 +63,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mResourceId = resource;
 		mCocktailList = cocktailList;
-		mFavoriteDAO = new FavoriteDAO(context);
+		mSQLiteFavorite = new SQLiteFavorite(context);
         mHavingProductDAO = new HavingProductDAO(context);
         mTextAppearanceSpan = new TextAppearanceSpan(context.getApplicationContext(), R.style.ListViewHaveItem);
 	}
@@ -98,9 +100,9 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		/* カクテル情報 */
 		Cocktail item = mCocktailList.get(position);
 		// カクテル名
-		holder.cocktailNameView.setText(item.getName());
+		holder.cocktailNameView.setText(nullToEmpty(item.getName()));
 		// サムネイル
-		String thumbnailUrl = item.getThumbnailUrl();
+		String thumbnailUrl = nullToEmpty(item.getThumbnailUrl());
 		ImageLoader imageLoader = VolleyManager.getInstance(parent.getContext()).getImageLoader();
 		holder.thumbnailImageView.setDefaultImageResId(R.drawable.nothumbnail);
 		holder.thumbnailImageView.setErrorImageResId(R.drawable.nothumbnail);
@@ -112,51 +114,55 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		/* レシピ */
         SpannableStringBuilder recipeString = new SpannableStringBuilder();
         List<Recipe> recipes = item.getRecipes();
-        for (Recipe recipe : recipes) {
-            if (recipeString.length() > 0) {
-                recipeString.append("／");
+        if (recipes != null) {
+            for (Recipe recipe : recipes) {
+                if (recipeString.length() > 0) {
+                    recipeString.append("／");
+                }
+                int startPos = recipeString.length();
+                recipeString.append(recipe.getMatelialName());
+                if (mHavingProductDAO.ExistMaterialID(recipe.getMatelialID())) {
+                    // 所持商品と一致した場合は文字色を設定
+                    recipeString.setSpan(
+                            mTextAppearanceSpan,
+                            startPos,
+                            recipeString.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
+                }
             }
-            int startPos = recipeString.length();
-            recipeString.append(recipe.getMatelialName());
-            if (mHavingProductDAO.ExistMaterialID(recipe.getMatelialID())) {
-                // 所持商品と一致した場合は文字色を設定
-                recipeString.setSpan(
-                        mTextAppearanceSpan,
-                        startPos,
-                        recipeString.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
-            }
+            holder.recipeView.setText(recipeString);
         }
-        holder.recipeView.setText(recipeString);
         /* お気に入り */
 		// お気に入りテーブルを検索しトグルのチェックを設定
 		String cocktailId = item.getId();
-		if (mFavoriteDAO.ExistCocktailId(cocktailId)) {
-			holder.favoriteButton.setChecked(true);
-		} else {
-			holder.favoriteButton.setChecked(false);
-		}
-		// お気に入りボタンにカクテルIDをタグ付け
-		holder.favoriteButton.setTag(R.string.TAG_CocktailID_Key, cocktailId);
-		// お気に入りボタンタップ時のリスナーを登録
-		holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				ToggleButton btn = (ToggleButton) view;
-				if (btn.isChecked()) {
-					// ボタンがONになった場合はお気に入りテーブルにカクテルIDを追加
-					Favorite favorite = new Favorite();
-					favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-					mFavoriteDAO.insertFavorite(favorite);
-				} else {
-					// ボタンがOFFになった場合はお気に入りテーブルからカクテルIDを削除
-					Favorite favorite = new Favorite();
-					favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-					mFavoriteDAO.deleteFavorite(favorite);
-				}
-			}
-		});
+		if (cocktailId != null) {
+            if (mSQLiteFavorite.ExistCocktailId(cocktailId)) {
+                holder.favoriteButton.setChecked(true);
+            } else {
+                holder.favoriteButton.setChecked(false);
+            }
+            // お気に入りボタンにカクテルIDをタグ付け
+            holder.favoriteButton.setTag(R.string.TAG_CocktailID_Key, cocktailId);
+            // お気に入りボタンタップ時のリスナーを登録
+            holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ToggleButton btn = (ToggleButton) view;
+                    if (btn.isChecked()) {
+                        // ボタンがONになった場合はお気に入りテーブルにカクテルIDを追加
+                        Favorite favorite = new Favorite();
+                        favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
+                        mSQLiteFavorite.insertFavorite(favorite);
+                    } else {
+                        // ボタンがOFFになった場合はお気に入りテーブルからカクテルIDを削除
+                        Favorite favorite = new Favorite();
+                        favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
+                        mSQLiteFavorite.deleteFavorite(favorite);
+                    }
+                }
+            });
+        }
 		return convertView;
 	}
 }

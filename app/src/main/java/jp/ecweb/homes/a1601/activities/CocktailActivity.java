@@ -18,7 +18,7 @@ import java.util.Locale;
 
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.storage.FavoriteDAO;
+import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.Favorite;
@@ -32,7 +32,7 @@ public class CocktailActivity extends AppCompatActivity {
 	private static final String TAG = CocktailActivity.class.getSimpleName();
 
 	// メンバ変数
-	private FavoriteDAO mFavoriteDAO;                       // SQLite お気に入りテーブル
+	private SQLiteFavorite mSQLiteFavorite;                       // SQLite お気に入りテーブル
 
 /*--------------------------------------------------------------------------------------------------
 	Activityイベント処理
@@ -50,7 +50,7 @@ public class CocktailActivity extends AppCompatActivity {
 		Intent intent = getIntent();
 		String selectedCocktailID = intent.getStringExtra("ID");
 		// メンバ変数の初期化
-		mFavoriteDAO = new FavoriteDAO(this);
+		mSQLiteFavorite = new SQLiteFavorite(this);
 
 		// サーバーからカクテル情報を取得
 		HttpCocktail cocktail = new HttpCocktail(this);
@@ -144,7 +144,7 @@ public class CocktailActivity extends AppCompatActivity {
 		ToggleButton favoriteButton = (ToggleButton) findViewById(R.id.favoriteButton);
 
 		// 持っているボタンの初期値を所持製品DBから取得
-		if (mFavoriteDAO.ExistCocktailId(cocktail.getId())) {
+		if (mSQLiteFavorite.ExistCocktailId(cocktail.getId())) {
 			favoriteButton.setChecked(true);
 		} else {
 			favoriteButton.setChecked(false);
@@ -163,12 +163,18 @@ public class CocktailActivity extends AppCompatActivity {
 					// ボタンがONになった場合はお気に入りテーブルにカクテルIDを追加
 					Favorite favorite = new Favorite();
 					favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-					mFavoriteDAO.insertFavorite(favorite);
+					if (!mSQLiteFavorite.insertFavorite(favorite)) {
+						Toast.makeText(CocktailActivity.this, "お気に入りの登録に失敗しました。", Toast.LENGTH_SHORT).show();
+						((ToggleButton) view).setChecked(false);
+					}
 				} else {
 					// ボタンがOFFになった場合はお気に入りテーブルからカクテルIDを削除
 					Favorite favorite = new Favorite();
 					favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-					mFavoriteDAO.deleteFavorite(favorite);
+                    if (!mSQLiteFavorite.deleteFavorite(favorite)) {
+                        Toast.makeText(CocktailActivity.this, "お気に入りの削除に失敗しました。", Toast.LENGTH_SHORT).show();
+                        ((ToggleButton) view).setChecked(true);
+                    }
 				}
 			}
 		});

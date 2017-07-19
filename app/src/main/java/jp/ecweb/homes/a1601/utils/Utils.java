@@ -28,4 +28,8 @@ public class Utils {
         }
         return versionName;
     }
+
+    public static String nullToEmpty(String text) {
+        return text != null ? text : "";
+    }
 }

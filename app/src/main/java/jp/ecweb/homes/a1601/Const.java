@@ -27,12 +27,16 @@ public final class Const {
     public static final String RSP_STATUS_OK            = "OK";
     public static final String RSP_STATUS_NG            = "NG";
     // カテゴリ情報キー定義
-    public static final String RSP_KEY_CATEGORY1ITEMS = "CATEGORY1ITEMS";
-    public static final String RSP_KEY_CATEGORY1        = "RES_KEY_CATEGORY1";
+    public static final String RSP_KEY_CATEGORY1ITEMS   = "CATEGORY1ITEMS";
+    public static final String RSP_KEY_CATEGORY1        = "CATEGORY1";
     public static final String RSP_KEY_CATEGORY1NUM     = "CATEGORY1NUM";
     public static final String RSP_KEY_CATEGORY2_ITEMS  = "CATEGORY2ITEMS";
-    public static final String RSP_KEY_CATEGORY2        = "RES_KEY_CATEGORY2";
+    public static final String RSP_KEY_CATEGORY2        = "CATEGORY2";
     public static final String RSP_KEY_CATEGORY2_NUM    = "CATEGORY2NUM";
+
+    /** SQLite **/
+    public static final String TABLE_FAVORITE           = "favorite";
+    public static final String COLUMN_COCKTAILID        = "CocktailID";
 
     /** カスタムログ出力レベル設定 **/
     public static final boolean LOG_VERBOSE = DEBUG_MODE;
