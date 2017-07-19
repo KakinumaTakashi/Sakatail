@@ -17,7 +17,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".activities.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -25,15 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".A0201_ProductToCocktailActivity"
+        <activity android:name=".activities.A0201_ProductToCocktailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".A0202_ProductListActivity"
+        <activity android:name=".activities.A0202_ProductListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CocktailListActivity"
+        <activity android:name=".activities.CocktailListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CocktailActivity"
+        <activity android:name=".activities.CocktailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".A0203_ProductActivity"
+        <activity android:name=".activities.A0203_ProductActivity"
             android:screenOrientation="portrait"/>
     </application>
 

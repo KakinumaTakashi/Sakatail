@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".A0202_ProductListActivity">
+      tools:context=".activities.A0202_ProductListActivity">
 
     <!-- 戻る -->
     <item android:id="@+id/menu_back"
