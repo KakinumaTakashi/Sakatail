@@ -1,4 +1,4 @@
-package jp.ecweb.homes.a1601.utils;
+package jp.ecweb.homes.a1601.storage;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,7 +38,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
      * コンストラクタ
      * @param context       コンテキスト
      */
-	public SQLiteHelper(Context context) {
+	SQLiteHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 

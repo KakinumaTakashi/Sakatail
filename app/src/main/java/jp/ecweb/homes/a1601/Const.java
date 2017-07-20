@@ -21,6 +21,7 @@ public final class Const {
     public static final String WEBAPI_FAVORITE          = "getFavoriteCocktailList.php";
     public static final String WEBAPI_CATEGORY          = "getCocktailCategory.php";
     public static final String WEBAPI_COCKTAIL          = "getCocktail.php";
+    public static final String WEBAPI_PRODUCTTOCOCKTAILLIST = "getProductToCocktailList.php";
 
     /** レスポンスJSON **/
     // 共通部キー定義
@@ -41,6 +42,9 @@ public final class Const {
     /** SQLite **/
     public static final String TABLE_FAVORITE           = "favorite";
     public static final String COLUMN_COCKTAILID        = "CocktailID";
+    public static final String TABLE_HAVINGPRODUCT      = "HavingProduct";
+    public static final String COLUMN_PRODUCTID         = "ProductID";
+    public static final String COLUMN_MATERIALID        = "MaterialID";
 
     /** カスタムログ出力レベル設定 **/
     public static final boolean LOG_VERBOSE = DEBUG_MODE;

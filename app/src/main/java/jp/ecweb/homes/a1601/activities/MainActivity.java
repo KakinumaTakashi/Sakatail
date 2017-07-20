@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         CustomLog.d(TAG, "onCreate start");
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_a0101__main);
+        setContentView(R.layout.activity_main);
 
 		// 広告を表示
 		ExternalServicesLoader.loadAdMob(findViewById(R.id.adView));
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreateOptionsMenu(menu);
 
 		// リソースの登録
-        getMenuInflater().inflate(R.menu.menu_a0101__main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
 
 		// タップリスナーの登録
 		// 戻る
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
      * @param view  Button View
      */
     public void onMaterialToCocktailButtonTapped(View view) {
-        Intent intent = new Intent(this, A0201_ProductToCocktailActivity.class);
+        Intent intent = new Intent(this, ProductToCocktailListActivity.class);
         startActivity(intent);
     }
 

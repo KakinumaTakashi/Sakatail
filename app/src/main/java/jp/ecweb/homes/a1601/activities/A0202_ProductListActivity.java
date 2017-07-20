@@ -27,7 +27,7 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.network.ProductListCallbacks;
-import jp.ecweb.homes.a1601.storage.HavingProductDAO;
+import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.network.ProductCategoryListener;
 import jp.ecweb.homes.a1601.network.ProductListListener;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
@@ -43,7 +43,7 @@ public class A0202_ProductListActivity extends AppCompatActivity implements Prod
 
     // メンバ変数
 	private ProductListAdapter mListViewAdapter;					// アダプター格納用
-	private HavingProductDAO mHavingProductDAO;                     // 所持製品テーブル操作クラス
+	private SQLitePersonalBelongings mSQLitePersonalBelongings;                     // 所持製品テーブル操作クラス
 
     private List<Product> mProductList = new ArrayList<>();         // 商品一覧
 	private Category mCategory = new Category();                    // 選択カテゴリ
@@ -60,7 +60,7 @@ public class A0202_ProductListActivity extends AppCompatActivity implements Prod
 
         // 画面を縦方向に固定
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity_a0202__product_list);
+        setContentView(R.layout.activity_product_list);
 
 	    // 広告を表示
 	    MobileAds.initialize(this, getString(R.string.banner_ad_app_id));
@@ -69,7 +69,7 @@ public class A0202_ProductListActivity extends AppCompatActivity implements Prod
 	    mAdView.loadAd(adRequest);
 
 	    // メンバ変数の初期化
-	    mHavingProductDAO = new HavingProductDAO(this);
+	    mSQLitePersonalBelongings = new SQLitePersonalBelongings(this);
 
 	    // ListViewのアダプターを登録
 	    mListViewAdapter = new ProductListAdapter(getBaseContext(),
@@ -199,7 +199,7 @@ public class A0202_ProductListActivity extends AppCompatActivity implements Prod
         super.onCreateOptionsMenu(menu);
 
         // リソースの登録
-        getMenuInflater().inflate(R.menu.menu_a0202__product_list, menu);
+        getMenuInflater().inflate(R.menu.menu_product_list, menu);
 
         // タップリスナーの登録
         // 戻る
@@ -392,7 +392,7 @@ public class A0202_ProductListActivity extends AppCompatActivity implements Prod
 		Log.d(LOG_TAG, LOG_CLASSNAME + "onHoldButtonTapped start");
 
 		// 所持商品IDを取得
-		List<HavingProduct> havingProductList = mHavingProductDAO.getProductList();
+		List<HavingProduct> havingProductList = mSQLitePersonalBelongings.getProductList();
 
 		// 商品リストの取得
 		// WEB API Url

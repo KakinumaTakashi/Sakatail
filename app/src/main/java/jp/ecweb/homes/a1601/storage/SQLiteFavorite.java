@@ -10,7 +10,6 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.utils.CustomLog;
-import jp.ecweb.homes.a1601.utils.SQLiteHelper;
 import jp.ecweb.homes.a1601.models.Favorite;
 
 /**
@@ -31,7 +30,7 @@ public class SQLiteFavorite {
      */
     public SQLiteFavorite(Context context) {
 		SQLiteHelper SQLiteHelper = new SQLiteHelper(context);
-		this.mDb = SQLiteHelper.getWritableDatabase();
+		mDb = SQLiteHelper.getWritableDatabase();
 	}
 
     /**
@@ -65,7 +64,7 @@ public class SQLiteFavorite {
 
     /**
      * お気に入りリスト取得処理
-     * @return          お気に入りリスト
+     * @return                  お気に入りリスト
      */
 	public List<Favorite> getFavoriteList() {
         List<Favorite> favoriteList = new ArrayList<>();
@@ -76,7 +75,7 @@ public class SQLiteFavorite {
             cursor.moveToFirst();
             for (int i = 0; i < cursor.getCount(); i++) {
                 Favorite favorite = new Favorite();
-                favorite.setCocktailId(cursor.getString(cursor.getColumnIndex("CocktailID")));
+                favorite.setCocktailId(cursor.getString(cursor.getColumnIndex(Const.COLUMN_COCKTAILID)));
                 favoriteList.add(favorite);
                 cursor.moveToNext();
             }
@@ -95,7 +94,7 @@ public class SQLiteFavorite {
 	public Boolean insertFavorite(Favorite favorite) {
 		// 追加するレコードを作成
 		ContentValues values = new ContentValues();
-		values.put("CocktailID", favorite.getCocktailId());
+		values.put(Const.COLUMN_COCKTAILID, favorite.getCocktailId());
         // お気に入りテーブルにレコードを追加
         long insertCount = mDb.insert(Const.TABLE_FAVORITE, null, values);
         if (insertCount >= 0) {
@@ -116,7 +115,7 @@ public class SQLiteFavorite {
         // 削除追加するレコードを作成
 	    String[] values = new String[]{favorite.getCocktailId()};
 		// お気に入りテーブルからレコードを削除
-        int deleteCount = mDb.delete(Const.TABLE_FAVORITE, "CocktailID=?", values);
+        int deleteCount = mDb.delete(Const.TABLE_FAVORITE, Const.COLUMN_COCKTAILID + "=?", values);
         if (deleteCount >= 0) {
             CustomLog.d(TAG, "Successfully deleted from favorite table. [values:" + favorite.getCocktailId() + "]");
             return true;

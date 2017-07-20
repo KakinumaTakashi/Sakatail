@@ -13,8 +13,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Const;
-import jp.ecweb.homes.a1601.storage.HavingProductDAO;
+import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
@@ -32,7 +31,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 	private LayoutInflater mInflater;               // セルレイアウト
 	private int mResourceId;                        // セルに表示するリソースID
 
-	private HavingProductDAO mHavingProductDAO;     // SQLite操作用
+	private SQLitePersonalBelongings mSQLitePersonalBelongings;     // SQLite操作用
 
 	public List<Product> mProductList;              // 製品一覧
 
@@ -60,7 +59,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		this.mResourceId = resource;
 		this.mProductList = productList;
 
-		this.mHavingProductDAO = new HavingProductDAO(mContext);
+		this.mSQLitePersonalBelongings = new SQLitePersonalBelongings(mContext);
 	}
 
 /*--------------------------------------------------------------------------------------------------
@@ -135,7 +134,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		product.setMaterialID(item.getMaterialID());
 
 		// 製品IDがDBに登録されていたらボタンの初期値をON
-		if (mHavingProductDAO.ExistProductID(product.getProductID())) {
+		if (mSQLitePersonalBelongings.ExistProductID(product.getProductID())) {
 			holder.productHavingButton.setChecked(true);
 		} else {
 			holder.productHavingButton.setChecked(false);
@@ -153,10 +152,10 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 				if (btn.isChecked()) {
 					// ボタンがONになった場合 所持製品テーブルに製品ID・材料IDを登録
-					mHavingProductDAO.insertProduct(product);
+					mSQLitePersonalBelongings.insertProduct(product);
 				} else {
 					// ボタンがOFFになった場合 所持製品テーブルから製品ID・材料IDを削除
-					mHavingProductDAO.deleteProduct(product);
+					mSQLitePersonalBelongings.deleteProduct(product);
 				}
 			}
 		});

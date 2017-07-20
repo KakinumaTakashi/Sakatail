@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.storage.HavingProductDAO;
+import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.Recipe;
 
@@ -79,7 +79,7 @@ public class CocktailListListener implements Response.Listener<JSONObject>, Resp
 					JSONArray jsonRecipeArray = jsonCocktailObject.getJSONArray("RECIPES");
 
 					if (jsonRecipeArray.length() > 0) {
-						HavingProductDAO havingProductDAO = new HavingProductDAO(activity);
+						SQLitePersonalBelongings SQLitePersonalBelongings = new SQLitePersonalBelongings(activity);
 
 						for (int j = 0; j < jsonRecipeArray.length(); j++) {
 							Recipe recipe = new Recipe();
@@ -104,7 +104,7 @@ public class CocktailListListener implements Response.Listener<JSONObject>, Resp
 							if (j > 0) {
 								recipeString.append("／");
 							}
-							if (havingProductDAO.ExistMaterialID(jsonRecipeObject.getString("MATERIALID"))) {
+							if (SQLitePersonalBelongings.ExistMaterialID(jsonRecipeObject.getString("MATERIALID"))) {
 								// 所持商品と一致した場合は文字色を設定
 								int startPos = recipeString.length();
 								recipeString.append(jsonRecipeObject.getString("NAME"));
@@ -118,7 +118,7 @@ public class CocktailListListener implements Response.Listener<JSONObject>, Resp
 								recipeString.append(jsonRecipeObject.getString("NAME"));
 							}
 						}
-						havingProductDAO.close();
+						SQLitePersonalBelongings.close();
 
 					} else {
 						recipeString.append("レシピ準備中");

@@ -20,10 +20,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.network.ProductCallbacks;
-import jp.ecweb.homes.a1601.storage.HavingProductDAO;
+import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.network.ProductListener;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.HavingProduct;
@@ -40,7 +39,7 @@ public class A0203_ProductActivity extends AppCompatActivity implements ProductC
 	private String mProductId;
 	private String mMaterialId;
 
-	private HavingProductDAO mHavingProductDAO;
+	private SQLitePersonalBelongings mSQLitePersonalBelongings;
 	private RakutenResponse mRakutenResponse;
 
 /*--------------------------------------------------------------------------------------------------
@@ -49,13 +48,13 @@ public class A0203_ProductActivity extends AppCompatActivity implements ProductC
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_a0203__product);
+		setContentView(R.layout.activity_product);
 
 		Log.d(LOG_TAG, LOG_CLASSNAME + "onCreate start");
 
 		// 画面を縦方向に固定
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		setContentView(R.layout.activity_a0203__product);
+		setContentView(R.layout.activity_product);
 
 		// 広告を表示
 		MobileAds.initialize(this, getString(R.string.banner_ad_app_id));
@@ -70,7 +69,7 @@ public class A0203_ProductActivity extends AppCompatActivity implements ProductC
 		mMaterialId = intent.getStringExtra("materialId");
 
 		// メンバ変数の初期化
-		mHavingProductDAO = new HavingProductDAO(this);
+		mSQLitePersonalBelongings = new SQLitePersonalBelongings(this);
 
 		// 楽天商品検索APIから商品情報を取得
 		String url = "https://app.rakuten.co.jp/services/api/IchibaItem/Search/20140222" +
@@ -104,7 +103,7 @@ public class A0203_ProductActivity extends AppCompatActivity implements ProductC
 		super.onCreateOptionsMenu(menu);
 
 		// リソースの登録
-		getMenuInflater().inflate(R.menu.menu_a0203__product, menu);
+		getMenuInflater().inflate(R.menu.menu_product, menu);
 
 		// タップリスナーの登録
 		// 戻る
@@ -176,7 +175,7 @@ public class A0203_ProductActivity extends AppCompatActivity implements ProductC
 				(ToggleButton) findViewById(R.id.PuductHavingButton);
 
 		// 商品IDがテーブルに登録されていたらボタンの初期値をON
-		if (mHavingProductDAO.ExistProductID(mProductId)) {
+		if (mSQLitePersonalBelongings.ExistProductID(mProductId)) {
 			productHavingButton.setChecked(true);
 		} else {
 			productHavingButton.setChecked(false);
@@ -198,11 +197,11 @@ public class A0203_ProductActivity extends AppCompatActivity implements ProductC
 
 				if (btn.isChecked()) {
 					// ボタンがONになった場合 所持商品テーブルに商品ID・材料IDを登録
-					mHavingProductDAO.insertProduct(product);
+					mSQLitePersonalBelongings.insertProduct(product);
 
 				} else {
 					// ボタンがOFFになった場合 所持商品テーブルから商品ID・材料IDを削除
-					mHavingProductDAO.deleteProduct(product);
+					mSQLitePersonalBelongings.deleteProduct(product);
 				}
 			}
 		});

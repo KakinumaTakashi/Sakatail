@@ -17,7 +17,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.storage.HavingProductDAO;
+import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.Recipe;
@@ -35,7 +35,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 	private LayoutInflater mInflater;               // セルレイアウト
 	private int mResourceId;                        // セルに表示するリソースID
 
-    private HavingProductDAO mHavingProductDAO;
+    private SQLitePersonalBelongings mSQLitePersonalBelongings;
     private TextAppearanceSpan mTextAppearanceSpan;
 	private List<Cocktail> mCocktailList;            // カクテル一覧
 
@@ -61,7 +61,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mResourceId = resource;
 		mCocktailList = cocktailList;
-        mHavingProductDAO = new HavingProductDAO(context);
+        mSQLitePersonalBelongings = new SQLitePersonalBelongings(context);
         mTextAppearanceSpan = new TextAppearanceSpan(context.getApplicationContext(), R.style.ListViewHaveItem);
 	}
 
@@ -119,7 +119,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
                 }
                 int startPos = recipeString.length();
                 recipeString.append(recipe.getMatelialName());
-                if (mHavingProductDAO.ExistMaterialID(recipe.getMatelialID())) {
+                if (mSQLitePersonalBelongings.ExistMaterialID(recipe.getMatelialID())) {
                     // 所持商品と一致した場合は文字色を設定
                     recipeString.setSpan(
                             mTextAppearanceSpan,

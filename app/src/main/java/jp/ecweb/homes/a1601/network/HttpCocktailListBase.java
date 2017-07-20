@@ -12,6 +12,7 @@ import java.util.List;
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.models.Favorite;
 
@@ -25,6 +26,7 @@ abstract class HttpCocktailListBase {
     Context mContext;
     Category mCategory;
     List<Favorite> mFavoriteList;
+    List<HavingProduct> mProductList;
 
     /**
      * コンストラクタ
@@ -48,6 +50,14 @@ abstract class HttpCocktailListBase {
      */
     public void setFavoriteList(List<Favorite> favoriteList) {
         mFavoriteList = favoriteList;
+    }
+
+    /**
+     * 材料設定
+     * @param productList   材料情報
+     */
+    public void setProductList(List<HavingProduct> productList) {
+        mProductList = productList;
     }
 
     /**

@@ -4,7 +4,7 @@
                 xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".activities.A0201_ProductToCocktailActivity"
+                tools:context=".activities.ProductToCocktailListActivity"
                 android:background="@android:color/white">
 
     <LinearLayout

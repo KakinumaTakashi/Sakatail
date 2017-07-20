@@ -64,7 +64,7 @@ public class CocktailActivity extends AppCompatActivity {
 		super.onCreateOptionsMenu(menu);
 
 		// リソースの登録
-		getMenuInflater().inflate(R.menu.menu_a0302__cocktail, menu);
+		getMenuInflater().inflate(R.menu.menu_cocktail, menu);
 		// タップリスナーの登録
 		// 戻る
 		menu.findItem(R.id.menu_back).setOnMenuItemClickListener(
