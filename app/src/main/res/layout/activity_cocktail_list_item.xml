@@ -34,10 +34,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ToggleButton
+                <!--<ToggleButton-->
+                    <!--android:layout_width="30dp"-->
+                    <!--android:layout_height="30dp"-->
+                    <!--android:text="New ToggleButton"-->
+                    <!--android:id="@+id/favoriteButton"-->
+                    <!--android:background="@drawable/custom_togglebutton"-->
+                    <!--android:textOff=""-->
+                    <!--android:textOn=""/>-->
+                <jp.ecweb.homes.a1601.activities.FavoriteButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:text="New ToggleButton"
                     android:id="@+id/favoriteButton"
                     android:background="@drawable/custom_togglebutton"
                     android:textOff=""

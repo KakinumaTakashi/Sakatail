@@ -16,6 +16,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.Locale;
 
+import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
@@ -48,7 +49,7 @@ public class CocktailActivity extends AppCompatActivity {
 		ExternalServicesLoader.loadAdMob(findViewById(R.id.adView));
 		// インテントからカクテルIDを取得
 		Intent intent = getIntent();
-		String selectedCocktailID = intent.getStringExtra("ID");
+		String selectedCocktailID = intent.getStringExtra(Const.EXTRA_KEY_COCKTAILID);
 		// メンバ変数の初期化
 		mSQLiteFavorite = new SQLiteFavorite(this);
 
@@ -164,7 +165,11 @@ public class CocktailActivity extends AppCompatActivity {
 					Favorite favorite = new Favorite();
 					favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
 					if (!mSQLiteFavorite.insertFavorite(favorite)) {
-						Toast.makeText(CocktailActivity.this, "お気に入りの登録に失敗しました。", Toast.LENGTH_SHORT).show();
+						Toast.makeText(
+								CocktailActivity.this,
+                                getString(R.string.ERR_InsertFavoriteFailure),
+                                Toast.LENGTH_SHORT
+                        ).show();
 						((ToggleButton) view).setChecked(false);
 					}
 				} else {
@@ -172,7 +177,11 @@ public class CocktailActivity extends AppCompatActivity {
 					Favorite favorite = new Favorite();
 					favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
                     if (!mSQLiteFavorite.deleteFavorite(favorite)) {
-                        Toast.makeText(CocktailActivity.this, "お気に入りの削除に失敗しました。", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                CocktailActivity.this,
+                                getString(R.string.ERR_DeleteFavoriteFailure),
+                                Toast.LENGTH_SHORT
+                        ).show();
                         ((ToggleButton) view).setChecked(true);
                     }
 				}

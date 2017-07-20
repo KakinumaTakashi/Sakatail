@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.network.ProductCallbacks;
 import jp.ecweb.homes.a1601.storage.HavingProductDAO;

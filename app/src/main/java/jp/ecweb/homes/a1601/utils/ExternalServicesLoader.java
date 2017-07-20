@@ -33,6 +33,6 @@ public class ExternalServicesLoader {
      * @param view  クレジットを表示するWebView
      */
     public static void loadRakutenCredit(View view) {
-        ((WebView) view).loadUrl(Const.RANKUTEN_CREDIT_CONTENTS);
+        ((WebView) view).loadUrl(Const.RAKUTEN_CREDIT_CONTENTS);
     }
 }

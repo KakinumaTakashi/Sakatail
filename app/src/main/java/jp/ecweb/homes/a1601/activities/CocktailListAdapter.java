@@ -17,12 +17,12 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
+import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
 import jp.ecweb.homes.a1601.storage.HavingProductDAO;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
-import jp.ecweb.homes.a1601.models.Favorite;
 import jp.ecweb.homes.a1601.models.Recipe;
 
 import static jp.ecweb.homes.a1601.utils.Utils.nullToEmpty;
@@ -32,7 +32,9 @@ import static jp.ecweb.homes.a1601.utils.Utils.nullToEmpty;
  */
 public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 
-	// メンバ変数
+    private static final String TAG = CocktailListAdapter.class.getSimpleName();
+
+    // メンバ変数
 	private LayoutInflater mInflater;               // セルレイアウト
 	private int mResourceId;                        // セルに表示するリソースID
 
@@ -42,13 +44,13 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 	private List<Cocktail> mCocktailList;            // カクテル一覧
 
     /**
-     * セルのビュー保存用ビューホルダー
+     * セルのビュー保持用
      */
 	private class ViewHolder {
 		TextView cocktailNameView;
 		NetworkImageView thumbnailImageView;
 		TextView recipeView;
-		ToggleButton favoriteButton;
+        FavoriteButton favoriteButton;
 	}
 
 	/**
@@ -111,7 +113,8 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		} else {
 			holder.thumbnailImageView.setImageUrl(thumbnailUrl, imageLoader);
 		}
-		/* レシピ */
+		/* 材料 */
+		// TODO Util化
         SpannableStringBuilder recipeString = new SpannableStringBuilder();
         List<Recipe> recipes = item.getRecipes();
         if (recipes != null) {
@@ -134,34 +137,14 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
             holder.recipeView.setText(recipeString);
         }
         /* お気に入り */
-		// お気に入りテーブルを検索しトグルのチェックを設定
 		String cocktailId = item.getId();
 		if (cocktailId != null) {
-            if (mSQLiteFavorite.ExistCocktailId(cocktailId)) {
-                holder.favoriteButton.setChecked(true);
-            } else {
-                holder.favoriteButton.setChecked(false);
-            }
-            // お気に入りボタンにカクテルIDをタグ付け
+            // チェックを設定
+            holder.favoriteButton.setChecked(cocktailId);
+            // お気に入りボタンのタグにカクテルIDを設定
             holder.favoriteButton.setTag(R.string.TAG_CocktailID_Key, cocktailId);
             // お気に入りボタンタップ時のリスナーを登録
-            holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ToggleButton btn = (ToggleButton) view;
-                    if (btn.isChecked()) {
-                        // ボタンがONになった場合はお気に入りテーブルにカクテルIDを追加
-                        Favorite favorite = new Favorite();
-                        favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-                        mSQLiteFavorite.insertFavorite(favorite);
-                    } else {
-                        // ボタンがOFFになった場合はお気に入りテーブルからカクテルIDを削除
-                        Favorite favorite = new Favorite();
-                        favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-                        mSQLiteFavorite.deleteFavorite(favorite);
-                    }
-                }
-            });
+            holder.favoriteButton.setOnClickListener(new FavoriteButtonListener(parent.getContext()));
         }
 		return convertView;
 	}

@@ -13,6 +13,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
+import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.storage.HavingProductDAO;
 import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.models.Product;

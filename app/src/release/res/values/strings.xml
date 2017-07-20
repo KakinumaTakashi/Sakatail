@@ -2,4 +2,5 @@
 <resources>
     <string name="banner_ad_unit_id">ca-app-pub-2276647365248742/4684623515</string>
     <string name="banner_ad_app_id">ca-app-pub-2276647365248742~3207890318</string>
+    <string name="server_URL">http://ik1-325-22637.vs.sakura.ne.jp/A1601/</string>
 </resources>

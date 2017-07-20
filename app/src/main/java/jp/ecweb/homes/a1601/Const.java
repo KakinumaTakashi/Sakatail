@@ -3,6 +3,7 @@ package jp.ecweb.homes.a1601;
 /**
  * 定数クラス
  */
+@SuppressWarnings("UnusedDeclaration")
 public final class Const {
     private Const() {}
 
@@ -10,13 +11,16 @@ public final class Const {
     public static final Boolean DEBUG_MODE = BuildConfig.BUILD_TYPE.equals("debug");
 
     /** 楽天クレジット表示用HTML **/
-    public static final String RANKUTEN_CREDIT_CONTENTS = "file:///android_asset/rakutencredit.html";
+    public static final String RAKUTEN_CREDIT_CONTENTS  = "file:///android_asset/rakutencredit.html";
 
-    /** WEB API エンドポイント **/
-    public static final String WEBAPI_COCKTAILLIST = "getCocktailList.php";
-    public static final String WEBAPI_FAVORITE     = "getFavoriteCocktailList.php";
-    public static final String WEBAPI_CATEGORY     = "getCocktailCategory.php";
-    public static final String WEBAPI_COCKTAIL     = "getCocktail.php";
+    /** Intent Extra キー **/
+    public static final String EXTRA_KEY_COCKTAILID     = "ID";
+
+    /** WEB API URL **/
+    public static final String WEBAPI_COCKTAILLIST      = "getCocktailList.php";
+    public static final String WEBAPI_FAVORITE          = "getFavoriteCocktailList.php";
+    public static final String WEBAPI_CATEGORY          = "getCocktailCategory.php";
+    public static final String WEBAPI_COCKTAIL          = "getCocktail.php";
 
     /** レスポンスJSON **/
     // 共通部キー定義
