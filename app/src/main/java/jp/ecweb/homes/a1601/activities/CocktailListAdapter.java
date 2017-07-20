@@ -10,16 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
 import jp.ecweb.homes.a1601.storage.HavingProductDAO;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
@@ -32,13 +29,12 @@ import static jp.ecweb.homes.a1601.utils.Utils.nullToEmpty;
  */
 public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 
-    private static final String TAG = CocktailListAdapter.class.getSimpleName();
+//    private static final String TAG = CocktailListAdapter.class.getSimpleName();
 
     // メンバ変数
 	private LayoutInflater mInflater;               // セルレイアウト
 	private int mResourceId;                        // セルに表示するリソースID
 
-	private SQLiteFavorite mSQLiteFavorite;               // SQLite操作用
     private HavingProductDAO mHavingProductDAO;
     private TextAppearanceSpan mTextAppearanceSpan;
 	private List<Cocktail> mCocktailList;            // カクテル一覧
@@ -65,7 +61,6 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mResourceId = resource;
 		mCocktailList = cocktailList;
-		mSQLiteFavorite = new SQLiteFavorite(context);
         mHavingProductDAO = new HavingProductDAO(context);
         mTextAppearanceSpan = new TextAppearanceSpan(context.getApplicationContext(), R.style.ListViewHaveItem);
 	}
