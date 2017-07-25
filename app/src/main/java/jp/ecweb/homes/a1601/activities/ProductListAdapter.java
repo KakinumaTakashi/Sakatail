@@ -92,58 +92,61 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 		// 各ビューにカクテル情報を設定
 		Product item = mProductList.get(position);
-
 		// サムネイル
 		ImageLoader imageLoader = VolleyManager.getInstance(parent.getContext()).getImageLoader();
 		holder.thumbnailImageView.setDefaultImageResId(R.drawable.nothumbnail);
 		holder.thumbnailImageView.setErrorImageResId(R.drawable.nothumbnail);
-
-		if (item.getThumbnailURL().equals("")) {
-			holder.thumbnailImageView.setImageUrl(null, imageLoader);
-		} else {
-			holder.thumbnailImageView.setImageUrl(item.getThumbnailURL(), imageLoader);
-		}
-
+		if (item.getThumbnailURL() != null) {
+            if (item.getThumbnailURL().equals("")) {
+                holder.thumbnailImageView.setImageUrl(null, imageLoader);
+            } else {
+                holder.thumbnailImageView.setImageUrl(item.getThumbnailURL(), imageLoader);
+            }
+        }
 		// メーカー
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(item.getCategory1());
-		if (!item.getCategory2().equals("")) {
-			stringBuilder.append("/");
-			stringBuilder.append(item.getCategory2());
-		}
-		if (!item.getCategory3().equals("")) {
-			stringBuilder.append("/");
-			stringBuilder.append(item.getCategory3());
-		}
+		if (item.getCategory1() != null) {
+            stringBuilder.append(item.getCategory1());
+        }
+        if (item.getCategory2() != null) {
+            if (!item.getCategory2().equals("")) {
+                stringBuilder.append("/");
+                stringBuilder.append(item.getCategory2());
+            }
+        }
+        if (item.getCategory3() != null) {
+            if (!item.getCategory3().equals("")) {
+                stringBuilder.append("/");
+                stringBuilder.append(item.getCategory3());
+            }
+        }
 		holder.categoryTextView.setText(stringBuilder.toString());
-
 		// 製品名
-		holder.productNameView.setText(item.getName());
-
+        if (item.getName() != null) {
+            holder.productNameView.setText(item.getName());
+        }
 		// メーカー
-		if (item.getMaker().equals("")) {
-			holder.makerTextView.setVisibility(View.GONE);
-		} else {
-			holder.makerTextView.setText(item.getMaker());
-		}
-
+        if (item.getMaker() != null) {
+            if (item.getMaker().equals("")) {
+                holder.makerTextView.setVisibility(View.GONE);
+            } else {
+                holder.makerTextView.setText(item.getMaker());
+            }
+        }
 		// 持っているボタンの初期値を所持製品DBから取得
 		// 製品IDをキーにDBを検索
 		final HavingProduct product = new HavingProduct();
 		product.setProductID(item.getId());
 		product.setMaterialID(item.getMaterialID());
-
 		// 製品IDがDBに登録されていたらボタンの初期値をON
 		if (mSQLitePersonalBelongings.ExistProductID(product.getProductID())) {
 			holder.productHavingButton.setChecked(true);
 		} else {
 			holder.productHavingButton.setChecked(false);
 		}
-
 		// 持っているボタンに製品ID・材料IDをタグ付け
 		holder.productHavingButton.setTag(R.string.TAG_ProductID_Key, product.getProductID());
 		holder.productHavingButton.setTag(R.string.TAG_MaterialID_Key, product.getMaterialID());
-
 		// 持っているボタンタップ時のリスナーを登録
 		holder.productHavingButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -159,7 +162,6 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 				}
 			}
 		});
-
 		return convertView;
 	}
 }

@@ -16,6 +16,7 @@ import jp.ecweb.homes.a1601.models.Category;
 /**
  * Created by KakinumaTakashi on 2016/09/06.
  */
+// TODO 削除予定
 public class ProductCategoryListener implements Response.Listener<JSONObject>, Response.ErrorListener {
 
 /*--------------------------------------------------------------------------------------------------
@@ -113,7 +114,7 @@ public class ProductCategoryListener implements Response.Listener<JSONObject>, R
 
 			// ダイアログを表示
 			AlertDialog.Builder builder =
-					new AlertDialog.Builder(A0202_ProductListActivity.this);
+					new AlertDialog.Builder(ProductListActivity.this);
 
 			//ダイアログタイトルをセット
 			builder.setTitle("製造/販売会社を選択");
@@ -127,7 +128,7 @@ public class ProductCategoryListener implements Response.Listener<JSONObject>, R
 					mMaterialId = "All";
 					// ListViewを更新
 					mServerCommunication.getProductList(
-							A0202_ProductListActivity.this,
+							ProductListActivity.this,
 							mListViewAdapter,
 							mProductList, mMaker, mMaterialId);
 

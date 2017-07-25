@@ -14,7 +14,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.Locale;
 
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
@@ -42,7 +42,7 @@ public class CocktailActivity extends AppCompatActivity {
 		ExternalServicesLoader.loadAdMob(findViewById(R.id.adView));
 		// インテントからカクテルIDを取得
 		Intent intent = getIntent();
-		String selectedCocktailID = intent.getStringExtra(Const.EXTRA_KEY_COCKTAILID);
+		String selectedCocktailID = intent.getStringExtra(C.EXTRA_KEY_COCKTAILID);
 		// サーバーからカクテル情報を取得
 		HttpCocktail cocktail = new HttpCocktail(this);
 		cocktail.get(selectedCocktailID, new HttpCocktailListener() {

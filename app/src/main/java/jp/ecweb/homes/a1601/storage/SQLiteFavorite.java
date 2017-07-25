@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.models.Favorite;
 
@@ -22,7 +22,7 @@ public class SQLiteFavorite {
 	private SQLiteDatabase mDb;
 
 	private static final String SQL_SELECT_COCKTAILID
-            = "SELECT " + Const.COLUMN_COCKTAILID + " FROM " + Const.TABLE_FAVORITE;
+            = "SELECT " + C.COLUMN_COCKTAILID + " FROM " + C.TABLE_FAVORITE;
 
     /**
      * コンストラクタ
@@ -48,7 +48,7 @@ public class SQLiteFavorite {
      */
 	public Boolean ExistCocktailId(String cocktailId) {
 		// 抽出クエリ作成
-		String sql = SQL_SELECT_COCKTAILID + " WHERE " + Const.COLUMN_COCKTAILID + "=?";
+		String sql = SQL_SELECT_COCKTAILID + " WHERE " + C.COLUMN_COCKTAILID + "=?";
 		// 選択クエリ実行
 		Cursor cursor = mDb.rawQuery(sql, new String[]{cocktailId});
 		if (cursor != null) {
@@ -75,7 +75,7 @@ public class SQLiteFavorite {
             cursor.moveToFirst();
             for (int i = 0; i < cursor.getCount(); i++) {
                 Favorite favorite = new Favorite();
-                favorite.setCocktailId(cursor.getString(cursor.getColumnIndex(Const.COLUMN_COCKTAILID)));
+                favorite.setCocktailId(cursor.getString(cursor.getColumnIndex(C.COLUMN_COCKTAILID)));
                 favoriteList.add(favorite);
                 cursor.moveToNext();
             }
@@ -94,9 +94,9 @@ public class SQLiteFavorite {
 	public Boolean insertFavorite(Favorite favorite) {
 		// 追加するレコードを作成
 		ContentValues values = new ContentValues();
-		values.put(Const.COLUMN_COCKTAILID, favorite.getCocktailId());
+		values.put(C.COLUMN_COCKTAILID, favorite.getCocktailId());
         // お気に入りテーブルにレコードを追加
-        long insertCount = mDb.insert(Const.TABLE_FAVORITE, null, values);
+        long insertCount = mDb.insert(C.TABLE_FAVORITE, null, values);
         if (insertCount >= 0) {
             CustomLog.d(TAG, "Successful insertion into favorite table. [values:" + favorite.getCocktailId() + "]");
             return true;
@@ -115,7 +115,7 @@ public class SQLiteFavorite {
         // 削除追加するレコードを作成
 	    String[] values = new String[]{favorite.getCocktailId()};
 		// お気に入りテーブルからレコードを削除
-        int deleteCount = mDb.delete(Const.TABLE_FAVORITE, Const.COLUMN_COCKTAILID + "=?", values);
+        int deleteCount = mDb.delete(C.TABLE_FAVORITE, C.COLUMN_COCKTAILID + "=?", values);
         if (deleteCount >= 0) {
             CustomLog.d(TAG, "Successfully deleted from favorite table. [values:" + favorite.getCocktailId() + "]");
             return true;

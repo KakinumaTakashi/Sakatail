@@ -9,12 +9,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.models.Recipe;
+import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
  * カクテル情報クラス
  */
 public class Cocktail {
+    private static final String TAG = Cocktail.class.getSimpleName();
 
 	// メンバ変数
     private String id;					// カクテルID
@@ -197,7 +198,7 @@ public class Cocktail {
             setRecipes(recipeList);
             setRecipeStringBuffer(recipeString);
         } catch (JSONException e) {
-            e.printStackTrace();
+            CustomLog.e(TAG, "Failed to create object from JSON.", e);
         }
     }
 }

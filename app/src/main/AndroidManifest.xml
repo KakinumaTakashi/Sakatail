@@ -27,7 +27,7 @@
         </activity>
         <activity android:name=".activities.ProductToCocktailListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.A0202_ProductListActivity"
+        <activity android:name=".activities.ProductListActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".activities.CocktailListActivity"
             android:screenOrientation="portrait"/>

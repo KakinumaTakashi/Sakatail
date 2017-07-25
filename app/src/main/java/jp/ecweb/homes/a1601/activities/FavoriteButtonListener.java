@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
-import jp.ecweb.homes.a1601.Const;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.models.Favorite;
 import jp.ecweb.homes.a1601.storage.SQLiteFavorite;

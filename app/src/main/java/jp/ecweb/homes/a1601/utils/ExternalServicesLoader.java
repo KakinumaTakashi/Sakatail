@@ -8,7 +8,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
 
 /**
@@ -33,6 +33,6 @@ public class ExternalServicesLoader {
      * @param view  クレジットを表示するWebView
      */
     public static void loadRakutenCredit(View view) {
-        ((WebView) view).loadUrl(Const.RAKUTEN_CREDIT_CONTENTS);
+        ((WebView) view).loadUrl(C.RAKUTEN_CREDIT_CONTENTS);
     }
 }

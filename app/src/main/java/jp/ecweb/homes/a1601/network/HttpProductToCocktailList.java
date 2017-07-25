@@ -5,7 +5,7 @@ import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
 
 /**
@@ -28,7 +28,7 @@ public class HttpProductToCocktailList extends HttpCocktailListBase {
      * @param listener      通信完了リスナー
      */
     public void post(HttpCocktailListListener listener) {
-        String url = mContext.getString(R.string.server_URL) + Const.WEBAPI_PRODUCTTOCOCKTAILLIST;
+        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTTOCOCKTAILLIST;
         super.post(url, createRequest(), listener);
     }
 

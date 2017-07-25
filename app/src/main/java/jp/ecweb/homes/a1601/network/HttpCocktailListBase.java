@@ -11,7 +11,7 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.Cocktail;
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.models.Favorite;
@@ -19,6 +19,7 @@ import jp.ecweb.homes.a1601.models.Favorite;
 /**
  * カクテル一覧取得ベースクラス
  */
+// TODO 削除予定
 abstract class HttpCocktailListBase {
 
     private static final String TAG = HttpCocktailListBase.class.getSimpleName();
@@ -68,20 +69,20 @@ abstract class HttpCocktailListBase {
      */
     void post(String url, final JSONObject request, final HttpCocktailListListener listener) {
         HttpConnectionManager manager = new HttpConnectionManager(mContext);
-        boolean result = manager.post(url, request, new HttpConnectionListener() {
+        boolean result = manager.post(url, request, new HttpRequestListener() {
             @Override
-            public void onSuccess(HttpResult result) {
+            public void onSuccess(HttpResponse result) {
                 JSONObject response = result.getResponse();
                 List<Cocktail> cocktailList = new ArrayList<>();
                 try {
                     // ヘッダ部処理
-                    String status = response.getString(Const.RSP_KEY_STATUS);
-                    if (status.equals(Const.RSP_STATUS_NG)) {
+                    String status = response.getString(C.RSP_KEY_STATUS);
+                    if (status.equals(C.RSP_STATUS_NG)) {
                         // サーバーにてエラーが発生した場合はエラーをスロー
-                        throw new JSONException(response.getString(Const.RSP_KEY_MESSAGE));
+                        throw new JSONException(response.getString(C.RSP_KEY_MESSAGE));
                     }
                     // データ部処理
-                    JSONArray data = response.getJSONArray(Const.RSP_KEY_DATA);
+                    JSONArray data = response.getJSONArray(C.RSP_KEY_DATA);
                     for (int i = 0; i < data.length(); i++) {
                         JSONObject jsonCocktailObject = data.getJSONObject(i);
                         Cocktail cocktail = new Cocktail(jsonCocktailObject);
@@ -94,7 +95,7 @@ abstract class HttpCocktailListBase {
                 listener.onSuccess(cocktailList);
             }
             @Override
-            public void onError(HttpResult result) {
+            public void onError(HttpResponse result) {
                 CustomLog.e(TAG, "HTTP connection error "
                         + "[statusCode:" + result.getStatusCode() + " , message:" + result.getMessage() + "]");
                 listener.onError();

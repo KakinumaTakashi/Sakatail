@@ -9,42 +9,41 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
+import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.Cocktail;
-import jp.ecweb.homes.a1601.models.Favorite;
+import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
- * お気に入り別カクテル一覧取得クラス
+ *
  */
-public class HttpCocktailListByFavorite extends HttpRequestBase {
-    private static final String TAG = HttpCocktailListByFavorite.class.getSimpleName();
+public class HttpRequestProductList extends HttpRequestBase {
+    private static final String TAG = HttpRequestProductList.class.getSimpleName();
 
-    private List<Favorite> mFavoriteList;
+    private Category mCategory;
 
     /**
      * コンストラクタ
      * @param context       コンテキスト
      */
-    public HttpCocktailListByFavorite(Context context) {
+    public HttpRequestProductList(Context context) {
         super(context);
     }
 
     /**
-     * お気に入り設定
-     * @param favoriteList  お気に入り情報
+     * カテゴリ設定
+     * @param category      カテゴリ情報
      */
-    public void setFavoriteList(List<Favorite> favoriteList) {
-        mFavoriteList = favoriteList;
+    public void setCategory(Category category) {
+        mCategory = category;
     }
 
     /**
      * POSTリクエスト送信
      * @param listener      通信完了リスナー
      */
-    public void post(final HttpCocktailListListener listener) {
-        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_FAVORITE;
-//        super.post(url, createRequest(), listener);
-
+    public void post(final HttpProductListListener listener) {
+        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTLIST;
         boolean resultParamCheck = super.post(url, createRequest(), new HttpRequestListener() {
             @Override
             public void onSuccess(HttpResponse result) {
@@ -54,12 +53,12 @@ public class HttpCocktailListByFavorite extends HttpRequestBase {
                     return;
                 }
                 // パース処理
-                List<Cocktail> cocktailList = result.toCocktailList();
-                if (cocktailList == null) {
+                List<Product> productList = result.toProductList();
+                if (productList == null) {
                     listener.onError();
                     return;
                 }
-                listener.onSuccess(cocktailList);
+                listener.onSuccess(productList);
             }
             @Override
             public void onError(HttpResponse result) {
@@ -78,19 +77,15 @@ public class HttpCocktailListByFavorite extends HttpRequestBase {
      * @return              リクエスト
      */
     private JSONObject createRequest() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < mFavoriteList.size(); i++) {
-            if (i > 0) {
-                stringBuilder.append(",");
-            }
-            stringBuilder.append(mFavoriteList.get(i).getCocktailId());
-        }
         JSONObject postData = new JSONObject();
         try {
-            postData.put("id", stringBuilder);
+            postData.put(C.REQ_KEY_MAKER, mCategory.getCategory1());
+            postData.put(C.REQ_KEY_MATERIALID, mCategory.getCategory2());
         } catch (JSONException e) {
-            e.printStackTrace();
+            CustomLog.e(TAG, "Create request failed.", e);
+            return null;
         }
         return postData;
     }
+
 }

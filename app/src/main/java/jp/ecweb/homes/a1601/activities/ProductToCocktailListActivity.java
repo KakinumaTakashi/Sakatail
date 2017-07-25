@@ -13,7 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.network.HttpCocktailListListener;
 import jp.ecweb.homes.a1601.network.HttpProductToCocktailList;
@@ -63,7 +63,7 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
 								+ ", Name:" + cocktail.getName() + "]");
 						// 詳細画面に遷移(タップされたカクテルIDを引き渡す)
 						Intent intent = new Intent(ProductToCocktailListActivity.this, CocktailActivity.class);
-						intent.putExtra(Const.EXTRA_KEY_COCKTAILID, cocktail.getId());
+						intent.putExtra(C.EXTRA_KEY_COCKTAILID, cocktail.getId());
 						startActivity(intent);
 					}
 				}
@@ -99,8 +99,7 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
 					@Override
 					public boolean onMenuItemClick(MenuItem menuItem) {
 						// 材料一覧画面に遷移
-						Intent intent = new Intent(getApplicationContext(),
-								A0202_ProductListActivity.class);
+						Intent intent = new Intent(getApplicationContext(), ProductListActivity.class);
 						startActivity(intent);
 						return true;
 					}

@@ -6,16 +6,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.C;
-import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
+import jp.ecweb.homes.a1601.models.Category;
+import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
- * カテゴリ一覧取得クラス
+ * 材料カテゴリ一覧取得クラス
  */
-public class HttpCocktailCategory {
-    private static final String TAG = HttpCocktailListBase.class.getSimpleName();
+public class HttpProductCategory {
+    private static final String TAG = HttpProductCategory.class.getSimpleName();
 
     private Context mContext;
 
@@ -23,7 +23,7 @@ public class HttpCocktailCategory {
      * コンストラクタ
      * @param context       コンテキスト
      */
-    public HttpCocktailCategory(Context context) {
+    public HttpProductCategory(Context context) {
         mContext = context;
     }
 
@@ -32,7 +32,7 @@ public class HttpCocktailCategory {
      * @param listener      通信完了リスナー
      */
     public void get(final HttpCategoryListener listener) {
-        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_CATEGORY;
+        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTCATEGORY;
         HttpConnectionManager manager = new HttpConnectionManager(mContext);
         boolean result = manager.get(url, new HttpRequestListener() {
                     @Override
@@ -77,18 +77,31 @@ public class HttpCocktailCategory {
         Category category = new Category();
         try {
             // Category1Items
-            JSONArray category1Items = jsonCategoryObject.getJSONArray(C.RSP_KEY_CATEGORY1ITEMS);
+            JSONArray category1Items = jsonCategoryObject.getJSONArray(C.RSP_KEY_PRODUCT_CATEGORY1ITEMS);
             for (int i = 0; i < category1Items.length(); i++) {
                 JSONObject jsonObject = category1Items.getJSONObject(i);
-                category.getCategory1List().add(jsonObject.getString(C.RSP_KEY_CATEGORY1));
-                category.getCategory1NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY1NUM));
+                category.getCategory1List().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT1_MAKER));
+                category.getCategory1ValueList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT1_MAKER));
+                category.getCategory1NumList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT1_MAKERNUM));
             }
             // Category2Items
-            JSONArray category2Items = jsonCategoryObject.getJSONArray(C.RSP_KEY_CATEGORY2ITEMS);
+            JSONArray category2Items = jsonCategoryObject.getJSONArray(C.RSP_KEY_PRODUCT_CATEGORY2ITEMS);
             for (int i = 0; i < category2Items.length(); i++) {
                 JSONObject jsonObject = category2Items.getJSONObject(i);
-                category.getCategory2List().add(jsonObject.getString(C.RSP_KEY_CATEGORY2));
-                category.getCategory2NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY2_NUM));
+                // 表示用文字列構築
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY1));
+                if (!jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY2).equals("")) {
+                    stringBuilder.append("/");
+                    stringBuilder.append(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY2));
+                }
+                if (!jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY3).equals("")) {
+                    stringBuilder.append("/");
+                    stringBuilder.append(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY3));
+                }
+                category.getCategory2List().add(stringBuilder.toString());
+                category.getCategory2ValueList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATID));
+                category.getCategory2NumList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATNUM));
             }
         } catch (JSONException e) {
             CustomLog.e(TAG, "Category parsing failed.", e);

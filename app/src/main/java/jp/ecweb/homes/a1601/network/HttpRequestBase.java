@@ -10,24 +10,19 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
 import jp.ecweb.homes.a1601.C;
-import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
+import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
- * HTTP通信クラス
+ * HTTPリクエスト ベースクラス
  */
-// TODO 削除予定
-class HttpConnectionManager {
+public class HttpRequestBase {
 
-    private static final String TAG = HttpConnectionManager.class.getSimpleName();
+    private static final String TAG = HttpRequestBase.class.getSimpleName();
 
-    private Context mContext;
+    protected Context mContext;
 
-    /**
-     * コンストラクタ
-     * @param context   コンテキスト
-     */
-    HttpConnectionManager(Context context) {
+    HttpRequestBase(Context context) {
         mContext = context;
     }
 

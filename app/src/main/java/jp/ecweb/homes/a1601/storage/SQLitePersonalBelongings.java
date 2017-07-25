@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ecweb.homes.a1601.Const;
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.models.HavingProduct;
 
@@ -39,8 +39,8 @@ public class SQLitePersonalBelongings {
 	}
 
 	private static final String SQL_SELECT_PRODUCTID_AND_MATERIALID
-			= "SELECT " + Const.COLUMN_PRODUCTID + "," + Const.COLUMN_MATERIALID
-			+ " FROM " + Const.TABLE_HAVINGPRODUCT;
+			= "SELECT " + C.COLUMN_PRODUCTID + "," + C.COLUMN_MATERIALID
+			+ " FROM " + C.TABLE_HAVINGPRODUCT;
 
 	/**
 	 * 製品ID存在チェック処理
@@ -48,8 +48,9 @@ public class SQLitePersonalBelongings {
 	 * @return                  存在チェック結果
 	 */
 	public Boolean ExistProductID(String productId) {
+		if (productId == null) return false;
 		// 抽出クエリ作成
-        String sql = SQL_SELECT_PRODUCTID_AND_MATERIALID + " WHERE " + Const.COLUMN_PRODUCTID + "=?";
+        String sql = SQL_SELECT_PRODUCTID_AND_MATERIALID + " WHERE " + C.COLUMN_PRODUCTID + "=?";
 		// 抽出クエリ実行
 		Cursor cursor = mDb.rawQuery(sql, new String[]{productId});
 		if (cursor != null) {
@@ -70,7 +71,7 @@ public class SQLitePersonalBelongings {
 	 */
 	public Boolean ExistMaterialID(String materialId) {
 		// 抽出クエリ作成
-        String sql = SQL_SELECT_PRODUCTID_AND_MATERIALID + " WHERE " + Const.COLUMN_MATERIALID + "=?";
+        String sql = SQL_SELECT_PRODUCTID_AND_MATERIALID + " WHERE " + C.COLUMN_MATERIALID + "=?";
 		// 抽出クエリ実行
 		Cursor cursor = mDb.rawQuery(sql, new String[]{materialId});
 		if (cursor != null) {
@@ -98,8 +99,8 @@ public class SQLitePersonalBelongings {
             // 所持製品テーブルをListに格納
             for (int i = 0; i < cursor.getCount(); i++) {
                 HavingProduct product = new HavingProduct();
-                product.setProductID(cursor.getString(cursor.getColumnIndex(Const.COLUMN_PRODUCTID)));
-                product.setMaterialID(cursor.getString(cursor.getColumnIndex(Const.COLUMN_MATERIALID)));
+                product.setProductID(cursor.getString(cursor.getColumnIndex(C.COLUMN_PRODUCTID)));
+                product.setMaterialID(cursor.getString(cursor.getColumnIndex(C.COLUMN_MATERIALID)));
                 productList.add(product);
                 cursor.moveToNext();
             }
@@ -118,10 +119,10 @@ public class SQLitePersonalBelongings {
 	public Boolean insertProduct(HavingProduct product) {
 		// 追加するレコードを作成
 		ContentValues values = new ContentValues();
-		values.put(Const.COLUMN_PRODUCTID, product.getProductID());
-		values.put(Const.COLUMN_MATERIALID, product.getMaterialID());
+		values.put(C.COLUMN_PRODUCTID, product.getProductID());
+		values.put(C.COLUMN_MATERIALID, product.getMaterialID());
 		// 所持製品テーブルにレコードを追加
-        long insertCount = mDb.insert(Const.TABLE_HAVINGPRODUCT, null, values);
+        long insertCount = mDb.insert(C.TABLE_HAVINGPRODUCT, null, values);
         if (insertCount >= 0) {
             CustomLog.d(TAG, "Successful insertion into HavingProduct table. [values:" + values.toString() + "]");
             return true;
@@ -140,7 +141,7 @@ public class SQLitePersonalBelongings {
         // 削除追加するレコードを作成
         String[] values = new String[]{product.getProductID()};
         // 所持製品テーブルからレコードを削除
-        int deleteCount = mDb.delete(Const.TABLE_HAVINGPRODUCT, Const.COLUMN_PRODUCTID + "=?", values);
+        int deleteCount = mDb.delete(C.TABLE_HAVINGPRODUCT, C.COLUMN_PRODUCTID + "=?", values);
         if (deleteCount >= 0) {
             CustomLog.d(TAG, "Successfully deleted from HavingProduct table. [values:" + product.getProductID() + "]");
             return true;

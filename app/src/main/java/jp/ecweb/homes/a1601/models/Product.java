@@ -1,9 +1,15 @@
 package jp.ecweb.homes.a1601.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import jp.ecweb.homes.a1601.utils.CustomLog;
+
 /**
- * Created by Takashi Kakinuma on 2016/07/14.
+ * 商品クラス
  */
 public class Product {
+    private static final String TAG = Product.class.getSimpleName();
 
     private String id;                  // 商品ID
     private String materialID;        // 素材ID
@@ -18,6 +24,21 @@ public class Product {
     private String thumbnailURL;     // サムネイルURL
     private String itemCode;            // 楽天商品コード
 
+    /**
+     * コンストラクタ
+     */
+    public Product() {}
+
+    /**
+     * コンストラクタ
+     * @param jsonObject        レスポンスデータ部
+     */
+    public Product(JSONObject jsonObject) {
+        fromJSON(jsonObject);
+    }
+/*--------------------------------------------------------------------------------------------------
+	Getter / Setter
+--------------------------------------------------------------------------------------------------*/
     public String getId() {
         return id;
     }
@@ -113,4 +134,28 @@ public class Product {
 	public void setItemCode(String itemCode) {
 		this.itemCode = itemCode;
 	}
+
+    /**
+     * JSONからオブジェクト生成
+     * @param jsonObject        JSONオブジェクト
+     */
+    private void fromJSON(JSONObject jsonObject) {
+        try {
+            setId(jsonObject.getString("ID"));
+            setMaterialID(jsonObject.getString("MATERIALID"));
+            setCategory1(jsonObject.getString("CATEGORY1"));
+            setCategory2(jsonObject.getString("CATEGORY2"));
+            setCategory3(jsonObject.getString("CATEGORY3"));
+            setMaterialName(jsonObject.getString("MATERIALNAME"));
+            setName(jsonObject.getString("NAME"));
+            setMaker(jsonObject.getString("MAKER"));
+            setBrand(jsonObject.getString("BRAND"));
+            setAlcoholDegree((float) jsonObject.getDouble("ALCOHOLDEGREE"));
+            setThumbnailURL(jsonObject.getString("THUMBNAILURL"));
+            setItemCode(jsonObject.getString("ITEMCODE"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            CustomLog.e(TAG, "Failed to create object from JSON.", e);
+        }
+    }
 }

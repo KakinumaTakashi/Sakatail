@@ -24,6 +24,7 @@ import jp.ecweb.homes.a1601.models.Recipe;
 /**
  * Created by KakinumaTakashi on 2016/09/04.
  */
+//TODO 削除予定
 public class CocktailListListener implements Response.Listener<JSONObject>, Response.ErrorListener {
 
 	// ログ出力
