@@ -16,8 +16,8 @@ import jp.ecweb.homes.a1601.utils.CustomLog;
 /**
  * お気に入り別カクテル一覧取得クラス
  */
-public class HttpCocktailListByFavorite extends HttpRequestBase {
-    private static final String TAG = HttpCocktailListByFavorite.class.getSimpleName();
+public class HttpRequestCocktailListByFavorite extends HttpRequestBase {
+    private static final String TAG = HttpRequestCocktailListByFavorite.class.getSimpleName();
 
     private List<Favorite> mFavoriteList;
 
@@ -25,7 +25,7 @@ public class HttpCocktailListByFavorite extends HttpRequestBase {
      * コンストラクタ
      * @param context       コンテキスト
      */
-    public HttpCocktailListByFavorite(Context context) {
+    public HttpRequestCocktailListByFavorite(Context context) {
         super(context);
     }
 

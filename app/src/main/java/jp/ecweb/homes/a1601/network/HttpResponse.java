@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
+import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.utils.CustomLog;
@@ -23,6 +24,7 @@ class HttpResponse {
     private String message;
     private JSONObject response;
 
+    @SuppressWarnings("UnusedDeclaration")
     boolean isSuccess() {
         return success;
     }
@@ -98,6 +100,16 @@ class HttpResponse {
                 productList.add(product);
             }
             return productList;
+        } catch (JSONException e) {
+            CustomLog.e(TAG, "Response parsing failed", e);
+            return null;
+        }
+    }
+
+    Category toCategory() {
+        try {
+            JSONObject data = response.getJSONObject(C.RSP_KEY_DATA);
+            return new Category(data);
         } catch (JSONException e) {
             CustomLog.e(TAG, "Response parsing failed", e);
             return null;

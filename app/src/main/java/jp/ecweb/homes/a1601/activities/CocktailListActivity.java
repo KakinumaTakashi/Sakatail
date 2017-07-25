@@ -21,10 +21,10 @@ import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.Cocktail;
-import jp.ecweb.homes.a1601.network.HttpCocktailCategory;
+import jp.ecweb.homes.a1601.network.HttpRequestCocktailCategory;
 import jp.ecweb.homes.a1601.network.HttpCategoryListener;
 import jp.ecweb.homes.a1601.network.HttpRequestCocktailListByCategory;
-import jp.ecweb.homes.a1601.network.HttpCocktailListByFavorite;
+import jp.ecweb.homes.a1601.network.HttpRequestCocktailListByFavorite;
 import jp.ecweb.homes.a1601.network.HttpCocktailListListener;
 import jp.ecweb.homes.a1601.utils.ExternalServicesLoader;
 
@@ -74,7 +74,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 				}
 		);
 		// 絞り込み用カテゴリ一覧の取得
-        HttpCocktailCategory categoryList = new HttpCocktailCategory(this);
+        HttpRequestCocktailCategory categoryList = new HttpRequestCocktailCategory(this);
         categoryList.get(new HttpCategoryListener() {
             @Override
             public void onSuccess(Category category) {
@@ -210,7 +210,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      */
 	public void onFavoriteButtonTapped(View view) {
 		// カクテル一覧の取得
-        HttpCocktailListByFavorite cocktailList = new HttpCocktailListByFavorite(this);
+        HttpRequestCocktailListByFavorite cocktailList = new HttpRequestCocktailListByFavorite(this);
         cocktailList.setFavoriteList(mSQLiteFavorite.getFavoriteList());
         cocktailList.post(this);
 	}

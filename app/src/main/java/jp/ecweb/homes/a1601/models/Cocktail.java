@@ -42,7 +42,7 @@ public class Cocktail {
      * @param jsonObject        レスポンスデータ部
      */
     public Cocktail(JSONObject jsonObject) {
-        parseJSON(jsonObject);
+        fromJSON(jsonObject);
     }
 /*--------------------------------------------------------------------------------------------------
 	Getter / Setter
@@ -109,7 +109,7 @@ public class Cocktail {
 	}
 
 	public void setMethod(String method) {
-		Method = method;
+		this.Method = method;
 	}
 
 	public String getGrass() {
@@ -117,7 +117,7 @@ public class Cocktail {
 	}
 
 	public void setGrass(String grass) {
-		Grass = grass;
+		this.Grass = grass;
 	}
 
 	public float getAlcoholDegree() {
@@ -125,7 +125,7 @@ public class Cocktail {
 	}
 
 	public void setAlcoholDegree(float alcoholDegree) {
-		AlcoholDegree = alcoholDegree;
+		this.AlcoholDegree = alcoholDegree;
 	}
 
 	public String getHowTo() {
@@ -133,7 +133,7 @@ public class Cocktail {
 	}
 
 	public void setHowTo(String howTo) {
-		HowTo = howTo;
+		this.HowTo = howTo;
 	}
 
 	public SpannableStringBuilder getRecipeStringBuffer() {
@@ -141,7 +141,7 @@ public class Cocktail {
 	}
 
 	public void setRecipeStringBuffer(SpannableStringBuilder recipeStringBuffer) {
-		RecipeStringBuffer = recipeStringBuffer;
+		this.RecipeStringBuffer = recipeStringBuffer;
 	}
 
 	public String getCopylight() {
@@ -149,48 +149,48 @@ public class Cocktail {
 	}
 
 	public void setCopylight(String copylight) {
-		Copylight = copylight;
+		this.Copylight = copylight;
 	}
 
     /**
-     * レスポンスデータ部パース処理
-     * @param jsonCocktailObject    レスポンスデータ部
+     * JSONからオブジェクト生成
+     * @param json          JSONオブジェクト
      */
-	private void parseJSON(JSONObject jsonCocktailObject) {
+	private void fromJSON(JSONObject json) {
         try {
             // カクテル情報部
-            setId(jsonCocktailObject.getString("ID"));
-            setName(jsonCocktailObject.getString("NAME"));
-            setPhotoUrl(jsonCocktailObject.getString("PHOTOURL"));
-            setThumbnailUrl(jsonCocktailObject.getString("THUMBNAILURL"));
-            setCopylight(jsonCocktailObject.getString("COPYLIGHT"));
-            setHowTo(jsonCocktailObject.getString("HOWTO"));
-            setMethod(jsonCocktailObject.getString("METHOD"));
-            setGrass(jsonCocktailObject.getString("GRASS"));
-            setAlcoholDegree((float) jsonCocktailObject.getDouble("ALCOHOLDEGREE"));
+            setId(json.getString("ID"));
+            setName(json.getString("NAME"));
+            if (json.has("PHOTOURL")) setPhotoUrl(json.getString("PHOTOURL"));
+            if (json.has("THUMBNAILURL")) setThumbnailUrl(json.getString("THUMBNAILURL"));
+            if (json.has("COPYLIGHT")) setCopylight(json.getString("COPYLIGHT"));
+            if (json.has("HOWTO")) setHowTo(json.getString("HOWTO"));
+            if (json.has("METHOD")) setMethod(json.getString("METHOD"));
+            if (json.has("PHOTOURL")) setGrass(json.getString("GRASS"));
+            if (json.has("PHOTOURL")) setAlcoholDegree((float) json.getDouble("ALCOHOLDEGREE"));
             // レシピ情報部
             List<Recipe> recipeList = new ArrayList<>();
             SpannableStringBuilder recipeString = new SpannableStringBuilder();
-            JSONArray jsonRecipeArray = jsonCocktailObject.getJSONArray("RECIPES");
+            JSONArray jsonRecipeArray = json.getJSONArray("RECIPES");
             if (jsonRecipeArray.length() > 0) {
                 for (int j = 0; j < jsonRecipeArray.length(); j++) {
                     Recipe recipe = new Recipe();
                     JSONObject jsonRecipeObject = jsonRecipeArray.getJSONObject(j);
-                    recipe.setId(jsonRecipeObject.getString("ID"));
-                    recipe.setCocktailID(jsonRecipeObject.getString("COCKTAILID"));
-                    recipe.setMatelialID(jsonRecipeObject.getString("MATERIALID"));
-                    recipe.setCategory1(jsonRecipeObject.getString("CATEGORY1"));
-                    recipe.setCategory2(jsonRecipeObject.getString("CATEGORY2"));
-                    recipe.setCategory3(jsonRecipeObject.getString("CATEGORY3"));
-                    recipe.setMatelialName(jsonRecipeObject.getString("NAME"));
-                    recipe.setQuantity(jsonRecipeObject.getInt("QUANTITY"));
-                    recipe.setUnit(jsonRecipeObject.getString("UNIT"));
+                    if (jsonRecipeObject.has("ID")) recipe.setId(jsonRecipeObject.getString("ID"));
+                    if (jsonRecipeObject.has("COCKTAILID")) recipe.setCocktailID(jsonRecipeObject.getString("COCKTAILID"));
+                    if (jsonRecipeObject.has("MATERIALID")) recipe.setMatelialID(jsonRecipeObject.getString("MATERIALID"));
+                    if (jsonRecipeObject.has("CATEGORY1")) recipe.setCategory1(jsonRecipeObject.getString("CATEGORY1"));
+                    if (jsonRecipeObject.has("CATEGORY2")) recipe.setCategory2(jsonRecipeObject.getString("CATEGORY2"));
+                    if (jsonRecipeObject.has("CATEGORY3")) recipe.setCategory3(jsonRecipeObject.getString("CATEGORY3"));
+                    if (jsonRecipeObject.has("NAME")) recipe.setMatelialName(jsonRecipeObject.getString("NAME"));
+                    if (jsonRecipeObject.has("QUANTITY")) recipe.setQuantity(jsonRecipeObject.getInt("QUANTITY"));
+                    if (jsonRecipeObject.has("UNIT")) recipe.setUnit(jsonRecipeObject.getString("UNIT"));
                     recipeList.add(recipe);
                     // ListView表示用レシピ連結
                     if (j > 0) {
                         recipeString.append("／");
                     }
-                    recipeString.append(jsonRecipeObject.getString("NAME"));
+                    if (jsonRecipeObject.has("NAME")) recipeString.append(jsonRecipeObject.getString("NAME"));
                 }
             } else {
                 recipeString.append("レシピ準備中");
@@ -198,7 +198,7 @@ public class Cocktail {
             setRecipes(recipeList);
             setRecipeStringBuffer(recipeString);
         } catch (JSONException e) {
-            CustomLog.e(TAG, "Failed to create object from JSON.", e);
+            CustomLog.w(TAG, "Failed to create object from JSON.", e);
         }
     }
 }

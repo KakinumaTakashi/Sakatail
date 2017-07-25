@@ -7,10 +7,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.ecweb.homes.a1601.C;
+import jp.ecweb.homes.a1601.utils.CustomLog;
+
 /**
  * カテゴリ情報クラス
  */
 public class Category {
+    private static final String TAG = Category.class.getSimpleName();
 
 	private String category1;                   // 頭文字
 	private String category2;                   // ベース種類
@@ -34,6 +38,15 @@ public class Category {
 		setCategory2NumList(new ArrayList<String>());
 		setCategory2ValueList(new ArrayList<String>());
 	}
+
+    /**
+     * コンストラクタ
+     * @param jsonObject        レスポンスデータ部
+     */
+	public Category(JSONObject jsonObject) {
+	    this();
+	    fromJSON(jsonObject);
+    }
 
     /**
      * カテゴリ情報全リセット
@@ -122,5 +135,30 @@ public class Category {
 
 	private void setCategory2ValueList(List<String> category2ValueList) {
 		this.category2ValueList = category2ValueList;
+	}
+
+	/**
+	 * JSONからオブジェクト生成
+	 * @param json        JSONオブジェクト
+	 */
+	private void fromJSON(JSONObject json) {
+        try {
+            // Category1Items
+            JSONArray category1Items = json.getJSONArray(C.RSP_KEY_CATEGORY1ITEMS);
+            for (int i = 0; i < category1Items.length(); i++) {
+                JSONObject jsonObject = category1Items.getJSONObject(i);
+                getCategory1List().add(jsonObject.getString(C.RSP_KEY_CATEGORY1));
+                getCategory1NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY1NUM));
+            }
+            // Category2Items
+            JSONArray category2Items = json.getJSONArray(C.RSP_KEY_CATEGORY2ITEMS);
+            for (int i = 0; i < category2Items.length(); i++) {
+                JSONObject jsonObject = category2Items.getJSONObject(i);
+                getCategory2List().add(jsonObject.getString(C.RSP_KEY_CATEGORY2));
+                getCategory2NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY2_NUM));
+            }
+        } catch (JSONException e) {
+            CustomLog.e(TAG, "Failed to create object from JSON.", e);
+        }
 	}
 }
