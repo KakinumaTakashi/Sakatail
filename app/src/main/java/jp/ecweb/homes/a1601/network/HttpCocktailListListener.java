@@ -9,5 +9,5 @@ import jp.ecweb.homes.a1601.models.Cocktail;
  */
 public interface HttpCocktailListListener {
     void onSuccess(List<Cocktail> cocktailList);
-    void onError();
+    void onError(int errorCode);
 }

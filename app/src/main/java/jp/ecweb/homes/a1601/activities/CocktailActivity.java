@@ -51,7 +51,7 @@ public class CocktailActivity extends AppCompatActivity {
                 initActivity(cocktail);
             }
             @Override
-            public void onError() {
+            public void onError(int errorCode) {
                 Toast.makeText(CocktailActivity.this, getString(R.string.ERR_VolleyMessage_text), Toast.LENGTH_SHORT).show();
             }
         });
@@ -127,7 +127,7 @@ public class CocktailActivity extends AppCompatActivity {
             // お気に入りボタンのタグにカクテルIDを設定
             favoriteButton.setTag(R.string.TAG_CocktailID_Key, cocktail.getId());
             // お気に入りボタンタップ時のリスナーを登録
-            favoriteButton.setOnClickListener(new FavoriteButtonListener(this));
+            favoriteButton.setOnClickListener(new FavoriteButtonListener());
         }
 		// ListViewのアダプターを登録
 		RecipeListAdapter adapter = new RecipeListAdapter(this,

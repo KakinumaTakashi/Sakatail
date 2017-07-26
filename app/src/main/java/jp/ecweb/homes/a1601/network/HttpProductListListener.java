@@ -9,5 +9,5 @@ import jp.ecweb.homes.a1601.models.Product;
  */
 public interface HttpProductListListener {
     void onSuccess(List<Product> productList);
-    void onError();
+    void onError(int errorCode);
 }

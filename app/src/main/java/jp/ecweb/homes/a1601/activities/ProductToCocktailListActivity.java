@@ -83,8 +83,17 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
 		cocktailList.setProductList(productList);
 		cocktailList.post(this);
 	}
+
+    @Override
+    protected void onDestroy() {
+        // DBをクローズ
+        if (mSQLitePersonalBelongings != null) {
+            mSQLitePersonalBelongings.close();
+        }
+        super.onDestroy();
+    }
 /*--------------------------------------------------------------------------------------------------
-	メニューイベント処理
+    メニューイベント処理
 --------------------------------------------------------------------------------------------------*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -141,7 +150,7 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
      * カクテル一覧取得処理の異常終了コールバック
      */
     @Override
-    public void onError() {
+    public void onError(int errorCode) {
         CustomLog.d(TAG, "onError start");
         Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text),
                 Toast.LENGTH_SHORT).show();

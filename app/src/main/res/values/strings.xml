@@ -51,4 +51,5 @@
     <string name="ERR_DownloadCategoryFailure">カテゴリの取得に失敗しました。</string>
     <string name="ERR_InsertFavoriteFailure">お気に入りの登録に失敗しました。</string>
     <string name="ERR_DeleteFavoriteFailure">お気に入りの削除に失敗しました。</string>
+    <string name="ERR_ItemNotFound">商品が見つかりませんでした。</string>
 </resources>

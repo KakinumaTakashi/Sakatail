@@ -73,6 +73,18 @@ class FavoriteButton extends ToggleButton {
     }
 
     /**
+     * 終了処理
+     */
+    @Override
+    protected void onDetachedFromWindow() {
+        // DBをクローズ
+        if (mSQLiteFavorite != null) {
+            mSQLiteFavorite.close();
+        }
+        super.onDetachedFromWindow();
+    }
+
+    /**
      * チェック状態設定
      * @param cocktailId    カクテルID
      */

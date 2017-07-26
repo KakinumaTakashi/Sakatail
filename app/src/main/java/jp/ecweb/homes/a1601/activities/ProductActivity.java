@@ -63,13 +63,30 @@ public class ProductActivity extends AppCompatActivity {
                 initActivity(rakutenResponse);
             }
             @Override
-            public void onError() {
-                Toast.makeText(ProductActivity.this, getString(R.string.ERR_VolleyMessage_text), Toast.LENGTH_SHORT).show();
+            public void onError(int errorCode) {
+                switch (errorCode) {
+                    case C.RSP_CD_ITEMNOTFOUND:
+                        Toast.makeText(ProductActivity.this, getString(R.string.ERR_ItemNotFound), Toast.LENGTH_SHORT).show();
+                        finish();
+                        break;
+                    default:
+                        Toast.makeText(ProductActivity.this, getString(R.string.ERR_VolleyMessage_text), Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
         });
 	}
+
+    @Override
+    protected void onDestroy() {
+        // DBをクローズ
+	    if (mSQLitePersonalBelongings != null) {
+            mSQLitePersonalBelongings.close();
+        }
+        super.onDestroy();
+    }
 /*--------------------------------------------------------------------------------------------------
-	メニューイベント処理
+    メニューイベント処理
 --------------------------------------------------------------------------------------------------*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

@@ -2,9 +2,11 @@ package jp.ecweb.homes.a1601.network;
 
 import android.content.Context;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
@@ -42,33 +44,38 @@ public class HttpRequestProductListByHaving extends HttpRequestBase {
      * @param listener          通信完了リスナー
      */
     public void post(final HttpProductListListener listener) {
-//        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTLIST;
         String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTHAVELIST;
         boolean resultParamCheck = super.post(url, createRequest(), new HttpRequestListener() {
             @Override
             public void onSuccess(HttpResponse result) {
                 // ヘッダーチェック
                 if (!result.checkResponseHeader()) {
-                    listener.onError();
+                    listener.onError(C.RSP_CD_HEADERCHECKERROR);
                     return;
                 }
                 // パース処理
-                List<Product> productList = result.toProductList();
-                if (productList == null) {
-                    listener.onError();
-                    return;
+                try {
+                    List<Product> productList = new ArrayList<>();
+                    JSONArray data = result.getResponse().getJSONArray(C.RSP_KEY_DATA);
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject jsonProductObject = data.getJSONObject(i);
+                        Product product = new Product(jsonProductObject);
+                        productList.add(product);
+                    }
+                    listener.onSuccess(productList);
+                } catch (JSONException e) {
+                    listener.onError(C.RSP_CD_PARSINGFAILED);
                 }
-                listener.onSuccess(productList);
             }
             @Override
             public void onError(HttpResponse result) {
                 CustomLog.e(TAG, "HTTP connection error "
                         + "[statusCode:" + result.getStatusCode() + " , message:" + result.getMessage() + "]");
-                listener.onError();
+                listener.onError(C.RSP_CD_HTTPCONNECTIONERROR);
             }
         });
         if (!resultParamCheck) {
-            listener.onError();
+            listener.onError(C.RSP_CD_PARAMERROR);
         }
     }
 

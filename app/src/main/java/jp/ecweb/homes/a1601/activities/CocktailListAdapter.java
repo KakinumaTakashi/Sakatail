@@ -21,6 +21,7 @@ import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.Recipe;
+import jp.ecweb.homes.a1601.utils.CustomLog;
 
 import static jp.ecweb.homes.a1601.utils.Utils.nullToEmpty;
 
@@ -29,7 +30,7 @@ import static jp.ecweb.homes.a1601.utils.Utils.nullToEmpty;
  */
 public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
 
-//    private static final String TAG = CocktailListAdapter.class.getSimpleName();
+    private static final String TAG = CocktailListAdapter.class.getSimpleName();
 
     // メンバ変数
 	private LayoutInflater mInflater;               // セルレイアウト
@@ -64,6 +65,16 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
         mSQLitePersonalBelongings = new SQLitePersonalBelongings(context);
         mTextAppearanceSpan = new TextAppearanceSpan(context.getApplicationContext(), R.style.ListViewHaveItem);
 	}
+
+    /**
+     * アダプタ終了処理
+     */
+	void destroy() {
+	    if (mSQLitePersonalBelongings != null) {
+            mSQLitePersonalBelongings.close();
+            CustomLog.d(TAG, "SQLitePersonalBelongings closed.");
+        }
+    }
 
     /**
      * セル描画
@@ -139,7 +150,7 @@ public class CocktailListAdapter extends ArrayAdapter<Cocktail> {
             // お気に入りボタンのタグにカクテルIDを設定
             holder.favoriteButton.setTag(R.string.TAG_CocktailID_Key, cocktailId);
             // お気に入りボタンタップ時のリスナーを登録
-            holder.favoriteButton.setOnClickListener(new FavoriteButtonListener(parent.getContext()));
+            holder.favoriteButton.setOnClickListener(new FavoriteButtonListener());
         }
 		return convertView;
 	}

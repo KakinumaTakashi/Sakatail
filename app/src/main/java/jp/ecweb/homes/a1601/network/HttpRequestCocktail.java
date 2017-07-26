@@ -2,6 +2,9 @@ package jp.ecweb.homes.a1601.network;
 
 import android.content.Context;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.utils.CustomLog;
@@ -32,26 +35,26 @@ public class HttpRequestCocktail extends HttpRequestBase {
             public void onSuccess(HttpResponse result) {
                 // ヘッダーチェック
                 if (!result.checkResponseHeader()) {
-                    listener.onError();
+                    listener.onError(C.RSP_CD_HEADERCHECKERROR);
                     return;
                 }
-                // パース処理
-                Cocktail cocktail = result.toCocktail();
-                if (cocktail == null) {
-                    listener.onError();
-                    return;
+                // データ部処理
+                try {
+                    JSONObject data = result.getResponse().getJSONObject(C.RSP_KEY_DATA);
+                    listener.onSuccess(new Cocktail(data));
+                } catch (JSONException e) {
+                    listener.onError(C.RSP_CD_PARSINGFAILED);
                 }
-                listener.onSuccess(cocktail);
             }
             @Override
             public void onError(HttpResponse result) {
                 CustomLog.e(TAG, "HTTP connection error "
                         + "[statusCode:" + result.getStatusCode() + " , message:" + result.getMessage() + "]");
-                listener.onError();
+                listener.onError(C.RSP_CD_HTTPCONNECTIONERROR);
             }
         });
         if (!resultParamCheck) {
-            listener.onError();
+            listener.onError(C.RSP_CD_PARAMERROR);
         }
     }
 }

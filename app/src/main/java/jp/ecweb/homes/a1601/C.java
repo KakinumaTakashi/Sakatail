@@ -56,6 +56,13 @@ public final class C {
     public static final String RSP_KEY_PRODUCT_CAT2_CATEGORY3   = "CATEGORY3";
     public static final String RSP_KEY_PRODUCT_CAT2_CATID       = "ID";
     public static final String RSP_KEY_PRODUCT_CAT2_CATNUM      = "CATEGORYNUM";
+    // エラーコード
+    public static final int RSP_CD_HEADERCHECKERROR         = 1001;
+    public static final int RSP_CD_PARSINGFAILED            = 1002;
+    public static final int RSP_CD_HTTPCONNECTIONERROR      = 1003;
+    public static final int RSP_CD_PARAMERROR               = 1004;
+    public static final int RSP_CD_ITEMNOTFOUND             = 1005;
+
     /** SQLite **/
     public static final String TABLE_FAVORITE               = "favorite";
     public static final String COLUMN_COCKTAILID            = "CocktailID";

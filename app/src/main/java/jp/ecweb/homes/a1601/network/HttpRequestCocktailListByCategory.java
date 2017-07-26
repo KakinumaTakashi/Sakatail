@@ -2,14 +2,16 @@ package jp.ecweb.homes.a1601.network;
 
 import android.content.Context;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.models.Category;
+import jp.ecweb.homes.a1601.models.CocktailCategory;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 
@@ -19,7 +21,7 @@ import jp.ecweb.homes.a1601.utils.CustomLog;
 public class HttpRequestCocktailListByCategory extends HttpRequestBase {
     private static final String TAG = HttpRequestCocktailListByCategory.class.getSimpleName();
 
-    private Category mCategory;
+    private CocktailCategory mCocktailCategory;
 
     /**
      * コンストラクタ
@@ -31,10 +33,10 @@ public class HttpRequestCocktailListByCategory extends HttpRequestBase {
 
     /**
      * カテゴリ設定
-     * @param category      カテゴリ情報
+     * @param cocktailCategory      カテゴリ情報
      */
-    public void setCategory(Category category) {
-        mCategory = category;
+    public void setCategory(CocktailCategory cocktailCategory) {
+        mCocktailCategory = cocktailCategory;
     }
 
     /**
@@ -48,26 +50,32 @@ public class HttpRequestCocktailListByCategory extends HttpRequestBase {
             public void onSuccess(HttpResponse result) {
                 // ヘッダーチェック
                 if (!result.checkResponseHeader()) {
-                    listener.onError();
+                    listener.onError(C.RSP_CD_HEADERCHECKERROR);
                     return;
                 }
-                // パース処理
-                List<Cocktail> cocktailList = result.toCocktailList();
-                if (cocktailList == null) {
-                    listener.onError();
-                    return;
+                // データ部処理
+                try {
+                    List<Cocktail> cocktailList = new ArrayList<>();
+                    JSONArray data = result.getResponse().getJSONArray(C.RSP_KEY_DATA);
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject jsonCocktailObject = data.getJSONObject(i);
+                        Cocktail cocktail = new Cocktail(jsonCocktailObject);
+                        cocktailList.add(cocktail);
+                    }
+                    listener.onSuccess(cocktailList);
+                } catch (JSONException e) {
+                    listener.onError(C.RSP_CD_PARSINGFAILED);
                 }
-                listener.onSuccess(cocktailList);
             }
             @Override
             public void onError(HttpResponse result) {
                 CustomLog.e(TAG, "HTTP connection error "
                         + "[statusCode:" + result.getStatusCode() + " , message:" + result.getMessage() + "]");
-                listener.onError();
+                listener.onError(C.RSP_CD_HTTPCONNECTIONERROR);
             }
         });
         if (!resultParamCheck) {
-            listener.onError();
+            listener.onError(C.RSP_CD_PARAMERROR);
         }
     }
 
@@ -78,8 +86,8 @@ public class HttpRequestCocktailListByCategory extends HttpRequestBase {
     private JSONObject createRequest() {
         JSONObject postData = new JSONObject();
         try {
-            postData.put(C.REQ_KEY_CATEGORY1, mCategory.getCategory1());
-            postData.put(C.REQ_KEY_CATEGORY2, mCategory.getCategory2());
+            postData.put(C.REQ_KEY_CATEGORY1, mCocktailCategory.getCategory1());
+            postData.put(C.REQ_KEY_CATEGORY2, mCocktailCategory.getCategory2());
         } catch (JSONException e) {
             CustomLog.e(TAG, "Create request failed.", e);
             return null;

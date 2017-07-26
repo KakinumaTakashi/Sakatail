@@ -7,5 +7,5 @@ import jp.ecweb.homes.a1601.models.Cocktail;
  */
 public interface HttpCocktailListener {
     void onSuccess(Cocktail cocktail);
-    void onError();
+    void onError(int errorCode);
 }

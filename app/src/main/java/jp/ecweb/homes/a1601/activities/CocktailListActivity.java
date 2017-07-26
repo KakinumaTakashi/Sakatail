@@ -19,10 +19,10 @@ import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
-import jp.ecweb.homes.a1601.models.Category;
+import jp.ecweb.homes.a1601.models.CocktailCategory;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.network.HttpRequestCocktailCategory;
-import jp.ecweb.homes.a1601.network.HttpCategoryListener;
+import jp.ecweb.homes.a1601.network.HttpCocktailCategoryListener;
 import jp.ecweb.homes.a1601.network.HttpRequestCocktailListByCategory;
 import jp.ecweb.homes.a1601.network.HttpRequestCocktailListByFavorite;
 import jp.ecweb.homes.a1601.network.HttpCocktailListListener;
@@ -37,7 +37,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	private SQLiteFavorite mSQLiteFavorite;                         // SQLite お気に入りテーブル
 
 	private List<Cocktail> mCocktailList = new ArrayList<>();		// カクテル一覧
-	private Category mCategory = new Category();                    // 選択カテゴリ
+	private CocktailCategory mCocktailCategory = new CocktailCategory();                    // 選択カテゴリ
 
 /*--------------------------------------------------------------------------------------------------
 	Activityイベント処理
@@ -75,14 +75,14 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 		);
 		// 絞り込み用カテゴリ一覧の取得
         HttpRequestCocktailCategory categoryList = new HttpRequestCocktailCategory(this);
-        categoryList.get(new HttpCategoryListener() {
+        categoryList.get(new HttpCocktailCategoryListener() {
             @Override
-            public void onSuccess(Category category) {
+            public void onSuccess(CocktailCategory cocktailCategory) {
                 // カテゴリ情報を設定
-                mCategory = category;
+                mCocktailCategory = cocktailCategory;
             }
             @Override
-            public void onError() {
+            public void onError(int errorCode) {
 				Toast.makeText(CocktailListActivity.this,
                         getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
             }
@@ -97,11 +97,23 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 
 		// カクテル一覧の取得
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
-        cocktailList.setCategory(mCategory);
+        cocktailList.setCategory(mCocktailCategory);
         cocktailList.post(this);
 	}
+
+    @Override
+    protected void onDestroy() {
+	    // DBをクローズ
+	    if (mListViewAdapter != null) {
+	        mListViewAdapter.destroy();
+        }
+	    if (mSQLiteFavorite != null) {
+	        mSQLiteFavorite.close();
+        }
+        super.onDestroy();
+    }
 /*--------------------------------------------------------------------------------------------------
-	メニューイベント処理
+    メニューイベント処理
 --------------------------------------------------------------------------------------------------*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,10 +143,10 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	 */
 	public void onAllButtonTapped(View view) {
 		// 絞り込みをリセット
-		mCategory.resetCategoryAll();
+		mCocktailCategory.resetCategoryAll();
 		// カクテル一覧の取得
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
-        cocktailList.setCategory(mCategory);
+        cocktailList.setCategory(mCocktailCategory);
         cocktailList.post(this);
 	}
 
@@ -148,22 +160,22 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 		//ダイアログタイトルをセット
 		builder.setTitle("頭文字を選択");
 		// 表示項目の作成
-		CharSequence[] items = new CharSequence[mCategory.getCategory1List().size()];
-		for (int i = 0; i < mCategory.getCategory1List().size(); i++) {
+		CharSequence[] items = new CharSequence[mCocktailCategory.getCategory1List().size()];
+		for (int i = 0; i < mCocktailCategory.getCategory1List().size(); i++) {
             items[i] = makeCategoryString(
-                    mCategory.getCategory1List().get(i),
-                    mCategory.getCategory1NumList().get(i));
+                    mCocktailCategory.getCategory1List().get(i),
+                    mCocktailCategory.getCategory1NumList().get(i));
 		}
 		// 表示項目・リスナーの登録
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// 選択した五十音をセット(ベースの絞り込みは解除)
-				mCategory.setCategory1(mCategory.getCategory1List().get(which));
-				mCategory.resetCategory2();
+				mCocktailCategory.setCategory1(mCocktailCategory.getCategory1List().get(which));
+				mCocktailCategory.resetCategory2();
                 // カクテル一覧の取得
                 HttpRequestCocktailListByCategory cocktailList
                         = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
-                cocktailList.setCategory(mCategory);
+                cocktailList.setCategory(mCocktailCategory);
                 cocktailList.post(CocktailListActivity.this);
 			}
 		});
@@ -181,22 +193,22 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 		//ダイアログタイトルをセット
 		builder.setTitle("ベースを選択");
 		// 表示項目の作成
-		CharSequence[] items = new CharSequence[mCategory.getCategory2List().size()];
-		for (int i = 0; i < mCategory.getCategory2List().size(); i++) {
+		CharSequence[] items = new CharSequence[mCocktailCategory.getCategory2List().size()];
+		for (int i = 0; i < mCocktailCategory.getCategory2List().size(); i++) {
             items[i] = makeCategoryString(
-                    mCategory.getCategory2List().get(i),
-                    mCategory.getCategory2NumList().get(i));
+                    mCocktailCategory.getCategory2List().get(i),
+                    mCocktailCategory.getCategory2NumList().get(i));
 		}
         // 表示項目・リスナーの登録
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// 選択したベースをセット(五十音の絞り込みは解除)
-				mCategory.resetCategory1();
-				mCategory.setCategory2(mCategory.getCategory2List().get(which));
+				mCocktailCategory.resetCategory1();
+				mCocktailCategory.setCategory2(mCocktailCategory.getCategory2List().get(which));
 				// カクテル一覧の取得
                 HttpRequestCocktailListByCategory cocktailList
                         = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
-                cocktailList.setCategory(mCategory);
+                cocktailList.setCategory(mCocktailCategory);
                 cocktailList.post(CocktailListActivity.this);
 			}
 		});
@@ -248,7 +260,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      * カクテル一覧取得処理の異常終了コールバック
      */
     @Override
-    public void onError() {
+    public void onError(int errorCode) {
         CustomLog.d(TAG, "onError start");
         Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text),
                 Toast.LENGTH_SHORT).show();

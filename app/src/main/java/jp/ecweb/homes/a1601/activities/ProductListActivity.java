@@ -17,13 +17,13 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.network.HttpCategoryListener;
+import jp.ecweb.homes.a1601.models.ProductCategory;
+import jp.ecweb.homes.a1601.network.HttpProductCategoryListener;
 import jp.ecweb.homes.a1601.network.HttpRequestProductCategory;
 import jp.ecweb.homes.a1601.network.HttpProductListListener;
 import jp.ecweb.homes.a1601.network.HttpRequestProductListByCategory;
 import jp.ecweb.homes.a1601.network.HttpRequestProductListByHaving;
 import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
-import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.utils.CustomLog;
@@ -38,7 +38,7 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	private SQLitePersonalBelongings mSQLitePersonalBelongings;     // 所持製品テーブル操作クラス
 
     private List<Product> mProductList = new ArrayList<>();         // 商品一覧
-	private Category mCategory = new Category();                    // 選択カテゴリ
+	private ProductCategory mProductCategory = new ProductCategory();                    // 選択カテゴリ
 
 /*--------------------------------------------------------------------------------------------------
     Activityイベント処理
@@ -79,14 +79,14 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	    );
 		// 絞り込み用カテゴリ一覧の取得
 		HttpRequestProductCategory categoryList = new HttpRequestProductCategory(this);
-		categoryList.get(new HttpCategoryListener() {
+		categoryList.get(new HttpProductCategoryListener() {
 			@Override
-			public void onSuccess(Category category) {
+			public void onSuccess(ProductCategory productCategory) {
 				// カテゴリ情報を設定
-				mCategory = category;
+				mProductCategory = productCategory;
 			}
 			@Override
-			public void onError() {
+			public void onError(int errorCode) {
 				Toast.makeText(ProductListActivity.this,
 						getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
 			}
@@ -101,9 +101,21 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 
 		// 商品一覧の取得
 		HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
-		productList.setCategory(mCategory);
+		productList.setCategory(mProductCategory);
 		productList.post(this);
 	}
+
+    @Override
+    protected void onDestroy() {
+        // DBをクローズ
+        if (mListViewAdapter != null) {
+            mListViewAdapter.destroy();
+        }
+        if (mSQLitePersonalBelongings != null) {
+            mSQLitePersonalBelongings.close();
+        }
+        super.onDestroy();
+    }
 /*--------------------------------------------------------------------------------------------------
     メニューイベント処理
 --------------------------------------------------------------------------------------------------*/
@@ -134,11 +146,11 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		CustomLog.d(TAG, "onAllButtonTapped start");
 
 		// 絞り込みをリセット
-		mCategory.resetCategoryAll();
+		mProductCategory.resetCategoryAll();
 
         // 商品一覧の取得
         HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
-        productList.setCategory(mCategory);
+        productList.setCategory(mProductCategory);
         productList.post(this);
 	}
 
@@ -146,12 +158,12 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	public void onMakerButtonTapped(View view) {
 		CustomLog.d(TAG, "onMakerButtonTapped start");
 
-		CharSequence[] makerListItems = new CharSequence[mCategory.getCategory1List().size()];
+		CharSequence[] makerListItems = new CharSequence[mProductCategory.getCategory1List().size()];
 
-		for (int i = 0; i < mCategory.getCategory1List().size(); i++) {
+		for (int i = 0; i < mProductCategory.getCategory1List().size(); i++) {
             makerListItems[i] = makeCategoryString(
-                    mCategory.getCategory1List().get(i),
-                    mCategory.getCategory1NumList().get(i)
+                    mProductCategory.getCategory1List().get(i),
+                    mProductCategory.getCategory1NumList().get(i)
             );
         }
 
@@ -166,12 +178,12 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		builder.setItems(makerListItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// 選択した製造/販売会社をセット(カテゴリの絞り込みは解除)
-				mCategory.setCategory1(mCategory.getCategory1ValueList().get(which));
-				mCategory.resetCategory2();
+				mProductCategory.setCategory1(mProductCategory.getCategory1ValueList().get(which));
+				mProductCategory.resetCategory2();
 
                 // 商品一覧の取得
                 HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
-                productList.setCategory(mCategory);
+                productList.setCategory(mProductCategory);
                 productList.post(ProductListActivity.this);
 			}
 		});
@@ -183,13 +195,13 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	public void onCategoryButtonTapped(View view) {
 		CustomLog.d(TAG, "onCategoryButtonTapped start");
 
-		CharSequence[] categoryListItems = new CharSequence[mCategory.getCategory2List().size()];
+		CharSequence[] categoryListItems = new CharSequence[mProductCategory.getCategory2List().size()];
 
-		for (int i = 0; i < mCategory.getCategory2List().size(); i++) {
+		for (int i = 0; i < mProductCategory.getCategory2List().size(); i++) {
 			// 表示用文字列構築
             categoryListItems[i] = makeCategoryString(
-                    mCategory.getCategory2List().get(i),
-                    mCategory.getCategory2NumList().get(i)
+                    mProductCategory.getCategory2List().get(i),
+                    mProductCategory.getCategory2NumList().get(i)
             );
 		}
 
@@ -204,12 +216,12 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		builder.setItems(categoryListItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// 選択した材料カテゴリをセット(製造/販売会社の絞り込みは解除)
-				mCategory.resetCategory1();
-				mCategory.setCategory2(mCategory.getCategory2ValueList().get(which));
+				mProductCategory.resetCategory1();
+				mProductCategory.setCategory2(mProductCategory.getCategory2ValueList().get(which));
 
                 // 商品一覧の取得
                 HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
-                productList.setCategory(mCategory);
+                productList.setCategory(mProductCategory);
                 productList.post(ProductListActivity.this);
 			}
 		});
@@ -256,7 +268,7 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
     }
 
     @Override
-    public void onError() {
+    public void onError(int errorCode) {
         CustomLog.d(TAG, "onError start");
         Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text),
                 Toast.LENGTH_SHORT).show();

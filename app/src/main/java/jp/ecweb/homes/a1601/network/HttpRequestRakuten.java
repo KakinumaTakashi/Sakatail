@@ -2,6 +2,9 @@ package jp.ecweb.homes.a1601.network;
 
 import android.content.Context;
 
+import org.json.JSONException;
+
+import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.models.RakutenResponse;
 import jp.ecweb.homes.a1601.utils.CustomLog;
@@ -33,23 +36,27 @@ public class HttpRequestRakuten extends HttpRequestBase {
         boolean resultParamCheck = super.get(url, new HttpRequestListener() {
             @Override
             public void onSuccess(HttpResponse result) {
-                // パース処理
-                RakutenResponse rakutenResponse = result.toRakutenResponse();
-                if (rakutenResponse == null) {
-                    listener.onError();
-                    return;
+                // データ部処理
+                try {
+                    int count = result.getResponse().getInt("count");
+                    if (count > 0) {
+                        listener.onSuccess(new RakutenResponse(result.getResponse()));
+                    } else {
+                        listener.onError(C.RSP_CD_ITEMNOTFOUND);
+                    }
+                } catch (JSONException e) {
+                    listener.onError(C.RSP_CD_PARSINGFAILED);
                 }
-                listener.onSuccess(rakutenResponse);
             }
             @Override
             public void onError(HttpResponse result) {
                 CustomLog.e(TAG, "HTTP connection error "
                         + "[statusCode:" + result.getStatusCode() + " , message:" + result.getMessage() + "]");
-                listener.onError();
+                listener.onError(C.RSP_CD_HTTPCONNECTIONERROR);
             }
         });
         if (!resultParamCheck) {
-            listener.onError();
+            listener.onError(C.RSP_CD_PARAMERROR);
         }
     }
 }

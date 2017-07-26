@@ -7,5 +7,5 @@ import jp.ecweb.homes.a1601.models.RakutenResponse;
  */
 public interface HttpRakutenListener {
     void onSuccess(RakutenResponse rakutenResponse);
-    void onError();
+    void onError(int errorCode);
 }

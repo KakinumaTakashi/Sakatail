@@ -1,6 +1,7 @@
 package jp.ecweb.homes.a1601.activities;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,27 +19,26 @@ import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.R;
+import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
  * 材料からカクテルを探すビュー用アダプタ
- *
- * Created by Takashi Kakinuma on 2016/07/20.
  */
 public class ProductListAdapter extends ArrayAdapter<Product> {
 
+	private static final String TAG = ProductListAdapter.class.getSimpleName();
+
 	// メンバ変数
-	private Context mContext;                       // 呼び出し元コンテキスト
 	private LayoutInflater mInflater;               // セルレイアウト
 	private int mResourceId;                        // セルに表示するリソースID
 
 	private SQLitePersonalBelongings mSQLitePersonalBelongings;     // SQLite操作用
 
-	public List<Product> mProductList;              // 製品一覧
+	private List<Product> mProductList;              // 製品一覧
 
-/*--------------------------------------------------------------------------------------------------
-	インナークラス
---------------------------------------------------------------------------------------------------*/
-	// セルのビュー保存用ビューホルダー
+	/**
+	 * セルのビュー保持用
+	 */
 	private class ViewHolder {
 		NetworkImageView thumbnailImageView;
 		TextView categoryTextView;
@@ -47,44 +47,54 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		ToggleButton productHavingButton;
 	}
 
-/*--------------------------------------------------------------------------------------------------
-	コンストラクタ
---------------------------------------------------------------------------------------------------*/
-	public ProductListAdapter(Context context, int resource, List<Product> productList) {
+	/**
+	 * コンストラクタ
+	 * @param context       	コンテキスト
+	 * @param resource      	リソースID
+	 * @param productList  	商品情報リスト
+	 */
+	ProductListAdapter(Context context, int resource, List<Product> productList) {
 		super(context, resource, productList);
-
-		this.mContext = context;
-		this.mInflater =
-				(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.mResourceId = resource;
-		this.mProductList = productList;
-
-		this.mSQLitePersonalBelongings = new SQLitePersonalBelongings(mContext);
+		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mResourceId = resource;
+		mProductList = productList;
+		mSQLitePersonalBelongings = new SQLitePersonalBelongings(context);
 	}
 
-/*--------------------------------------------------------------------------------------------------
-	メソッド
---------------------------------------------------------------------------------------------------*/
-	// セル描画
+	/**
+	 * アダプタ終了処理
+	 */
+	void destroy() {
+		if (mSQLitePersonalBelongings != null) {
+			mSQLitePersonalBelongings.close();
+			CustomLog.d(TAG, "SQLitePersonalBelongings closed.");
+		}
+	}
+
+	/**
+	 * セル描画
+	 * @param position      リスト上の位置
+	 * @param convertView   再利用セルオブジェクト(nullあり)
+	 * @param parent        親ビュー
+	 * @return              セルオブジェクト
+	 */
+	@NonNull
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		ViewHolder holder;
 
 		if (convertView == null) {
 			// セルにリソースを展開
 			convertView = mInflater.inflate(mResourceId, null);
-
 			// ビューホルダーに各ビューを保存
 			holder = new ViewHolder();
-			holder.thumbnailImageView = (NetworkImageView) convertView.findViewById(R.id.ProductImageView);
-			holder.categoryTextView = (TextView) convertView.findViewById(R.id.CategoryTextView);
-			holder.productNameView = (TextView) convertView.findViewById(R.id.ProductNameView);
-			holder.makerTextView = (TextView) convertView.findViewById(R.id.MakerTextView);
-			holder.productHavingButton = (ToggleButton) convertView.findViewById(R.id.PuductHavingButton);
-
+			holder.thumbnailImageView = convertView.findViewById(R.id.ProductImageView);
+			holder.categoryTextView = convertView.findViewById(R.id.CategoryTextView);
+			holder.productNameView = convertView.findViewById(R.id.ProductNameView);
+			holder.makerTextView = convertView.findViewById(R.id.MakerTextView);
+			holder.productHavingButton = convertView.findViewById(R.id.PuductHavingButton);
 			// タグにビューホルダーのインスタンスを保存
 			convertView.setTag(holder);
-
 		} else {
 			// タグからビューホルダーのインスタンスを取得
 			holder = (ViewHolder) convertView.getTag();

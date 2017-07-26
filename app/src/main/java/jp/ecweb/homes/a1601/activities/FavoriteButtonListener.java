@@ -1,6 +1,5 @@
 package jp.ecweb.homes.a1601.activities;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,16 +15,6 @@ class FavoriteButtonListener implements View.OnClickListener {
 
     private static final String TAG = FavoriteButtonListener.class.getSimpleName();
 
-    private SQLiteFavorite mSQLiteFavorite;
-
-    /**
-     * コンストラクタ
-     * @param context       コンテキスト
-     */
-    FavoriteButtonListener(Context context) {
-        mSQLiteFavorite = new SQLiteFavorite(context);
-    }
-
     /**
      * クリック処理
      * @param view          ボタンビュー
@@ -33,12 +22,13 @@ class FavoriteButtonListener implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         CustomLog.d(TAG, "FavoriteButtonListener.onClick");
+        SQLiteFavorite sqliteFavorite = new SQLiteFavorite(view.getContext());
         FavoriteButton btn = (FavoriteButton) view;
         if (btn.isChecked()) {
             // ボタンがONになった場合はお気に入りテーブルにカクテルIDを追加
             Favorite favorite = new Favorite();
             favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-            if (!mSQLiteFavorite.insertFavorite(favorite)) {
+            if (!sqliteFavorite.insertFavorite(favorite)) {
                 Toast.makeText(
                         view.getContext(),
                         view.getContext().getString(R.string.ERR_InsertFavoriteFailure),
@@ -50,7 +40,7 @@ class FavoriteButtonListener implements View.OnClickListener {
             // ボタンがOFFになった場合はお気に入りテーブルからカクテルIDを削除
             Favorite favorite = new Favorite();
             favorite.setCocktailId((String) btn.getTag(R.string.TAG_CocktailID_Key));
-            if (!mSQLiteFavorite.deleteFavorite(favorite)) {
+            if (!sqliteFavorite.deleteFavorite(favorite)) {
                 Toast.makeText(
                         view.getContext(),
                         view.getContext().getString(R.string.ERR_DeleteFavoriteFailure),
@@ -59,5 +49,6 @@ class FavoriteButtonListener implements View.OnClickListener {
                 btn.setChecked(true);
             }
         }
+        sqliteFavorite.close();
     }
 }

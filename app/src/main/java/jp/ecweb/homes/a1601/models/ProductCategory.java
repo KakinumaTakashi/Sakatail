@@ -13,8 +13,8 @@ import jp.ecweb.homes.a1601.utils.CustomLog;
 /**
  * カテゴリ情報クラス
  */
-public class Category {
-    private static final String TAG = Category.class.getSimpleName();
+public class ProductCategory {
+    private static final String TAG = ProductCategory.class.getSimpleName();
 
 	private String category1;                   // 頭文字
 	private String category2;                   // ベース種類
@@ -29,7 +29,7 @@ public class Category {
     /**
      * コンストラクタ
      */
-	public Category() {
+	public ProductCategory() {
 		resetCategoryAll();
 		setCategory1List(new ArrayList<String>());
 		setCategory1ValueList(new ArrayList<String>());
@@ -43,7 +43,7 @@ public class Category {
      * コンストラクタ
      * @param jsonObject        レスポンスデータ部
      */
-	public Category(JSONObject jsonObject) {
+	public ProductCategory(JSONObject jsonObject) {
 	    this();
 	    fromJSON(jsonObject);
     }
@@ -142,23 +142,58 @@ public class Category {
 	 * @param json        JSONオブジェクト
 	 */
 	private void fromJSON(JSONObject json) {
-        try {
-            // Category1Items
-            JSONArray category1Items = json.getJSONArray(C.RSP_KEY_CATEGORY1ITEMS);
-            for (int i = 0; i < category1Items.length(); i++) {
-                JSONObject jsonObject = category1Items.getJSONObject(i);
-                getCategory1List().add(jsonObject.getString(C.RSP_KEY_CATEGORY1));
-                getCategory1NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY1NUM));
-            }
-            // Category2Items
-            JSONArray category2Items = json.getJSONArray(C.RSP_KEY_CATEGORY2ITEMS);
-            for (int i = 0; i < category2Items.length(); i++) {
-                JSONObject jsonObject = category2Items.getJSONObject(i);
-                getCategory2List().add(jsonObject.getString(C.RSP_KEY_CATEGORY2));
-                getCategory2NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY2_NUM));
-            }
-        } catch (JSONException e) {
-            CustomLog.e(TAG, "Failed to create object from JSON.", e);
-        }
+//		CocktailCategory cocktailCategory = new CocktailCategory();
+		try {
+//			JSONObject data = response.getJSONObject(C.RSP_KEY_DATA);
+			// TODO Categoryクラスをカクテル一覧と商品一覧で分ける
+			// Category1Items
+			JSONArray category1Items = json.getJSONArray(C.RSP_KEY_PRODUCT_CATEGORY1ITEMS);
+			for (int i = 0; i < category1Items.length(); i++) {
+				JSONObject jsonObject = category1Items.getJSONObject(i);
+				getCategory1List().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT1_MAKER));
+				getCategory1ValueList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT1_MAKER));
+				getCategory1NumList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT1_MAKERNUM));
+			}
+			// Category2Items
+			JSONArray category2Items = json.getJSONArray(C.RSP_KEY_PRODUCT_CATEGORY2ITEMS);
+			for (int i = 0; i < category2Items.length(); i++) {
+				JSONObject jsonObject = category2Items.getJSONObject(i);
+				// 表示用文字列構築
+				StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.append(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY1));
+				if (!jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY2).equals("")) {
+					stringBuilder.append("/");
+					stringBuilder.append(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY2));
+				}
+				if (!jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY3).equals("")) {
+					stringBuilder.append("/");
+					stringBuilder.append(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATEGORY3));
+				}
+				getCategory2List().add(stringBuilder.toString());
+				getCategory2ValueList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATID));
+				getCategory2NumList().add(jsonObject.getString(C.RSP_KEY_PRODUCT_CAT2_CATNUM));
+			}
+		} catch (JSONException e) {
+			CustomLog.e(TAG, "Failed to create object from JSON.", e);
+		}
+
+//        try {
+//            // Category1Items
+//            JSONArray category1Items = json.getJSONArray(C.RSP_KEY_CATEGORY1ITEMS);
+//            for (int i = 0; i < category1Items.length(); i++) {
+//                JSONObject jsonObject = category1Items.getJSONObject(i);
+//                getCategory1List().add(jsonObject.getString(C.RSP_KEY_CATEGORY1));
+//                getCategory1NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY1NUM));
+//            }
+//            // Category2Items
+//            JSONArray category2Items = json.getJSONArray(C.RSP_KEY_CATEGORY2ITEMS);
+//            for (int i = 0; i < category2Items.length(); i++) {
+//                JSONObject jsonObject = category2Items.getJSONObject(i);
+//                getCategory2List().add(jsonObject.getString(C.RSP_KEY_CATEGORY2));
+//                getCategory2NumList().add(jsonObject.getString(C.RSP_KEY_CATEGORY2_NUM));
+//            }
+//        } catch (JSONException e) {
+//            CustomLog.e(TAG, "Failed to create object from JSON.", e);
+//        }
 	}
 }
