@@ -9,41 +9,41 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.models.Category;
-import jp.ecweb.homes.a1601.models.Cocktail;
+import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
  *
  */
-public class HttpRequestProductList extends HttpRequestBase {
-    private static final String TAG = HttpRequestProductList.class.getSimpleName();
+public class HttpRequestProductListByHaving extends HttpRequestBase {
+    private static final String TAG = HttpRequestProductListByHaving.class.getSimpleName();
 
-    private Category mCategory;
+    private List<HavingProduct> mHavingProductList;
 
     /**
      * コンストラクタ
-     * @param context       コンテキスト
+     * @param context           コンテキスト
      */
-    public HttpRequestProductList(Context context) {
+    public HttpRequestProductListByHaving(Context context) {
         super(context);
     }
 
     /**
-     * カテゴリ設定
-     * @param category      カテゴリ情報
+     * 所持商品リスト設定
+     * @param havingProductList 所持商品リスト
      */
-    public void setCategory(Category category) {
-        mCategory = category;
+    public void setHavingProductList(List<HavingProduct> havingProductList) {
+        mHavingProductList = havingProductList;
     }
 
     /**
      * POSTリクエスト送信
-     * @param listener      通信完了リスナー
+     * @param listener          通信完了リスナー
      */
     public void post(final HttpProductListListener listener) {
-        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTLIST;
+//        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTLIST;
+        String url = mContext.getString(R.string.server_URL) + C.WEBAPI_PRODUCTHAVELIST;
         boolean resultParamCheck = super.post(url, createRequest(), new HttpRequestListener() {
             @Override
             public void onSuccess(HttpResponse result) {
@@ -77,14 +77,29 @@ public class HttpRequestProductList extends HttpRequestBase {
      * @return              リクエスト
      */
     private JSONObject createRequest() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < mHavingProductList.size(); i++) {
+            if (i > 0) {
+                stringBuilder.append(",");
+            }
+            stringBuilder.append(mHavingProductList.get(i).getProductID());
+        }
         JSONObject postData = new JSONObject();
         try {
-            postData.put(C.REQ_KEY_MAKER, mCategory.getCategory1());
-            postData.put(C.REQ_KEY_MATERIALID, mCategory.getCategory2());
+            postData.put("id", stringBuilder);
         } catch (JSONException e) {
             CustomLog.e(TAG, "Create request failed.", e);
             return null;
         }
+//
+//        JSONObject postData = new JSONObject();
+//        try {
+//            postData.put(C.REQ_KEY_MAKER, mCategory.getCategory1());
+//            postData.put(C.REQ_KEY_MATERIALID, mCategory.getCategory2());
+//        } catch (JSONException e) {
+//            CustomLog.e(TAG, "Create request failed.", e);
+//            return null;
+//        }
         return postData;
     }
 

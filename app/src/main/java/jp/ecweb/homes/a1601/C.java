@@ -25,6 +25,7 @@ public final class C {
     public static final String WEBAPI_PRODUCTTOCOCKTAILLIST = "getProductToCocktailList.php";
     public static final String WEBAPI_PRODUCTCATEGORY       = "getProductCategory.php";
     public static final String WEBAPI_PRODUCTLIST           = "getProductList.php";
+    public static final String WEBAPI_PRODUCTHAVELIST       = "getProductHaveList.php";
     /** リクエストキー **/
     public static final String REQ_KEY_CATEGORY1            = "Category1";
     public static final String REQ_KEY_CATEGORY2            = "Category2";

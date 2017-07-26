@@ -33,7 +33,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".activities.CocktailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.A0203_ProductActivity"
+        <activity android:name=".activities.ProductActivity"
             android:screenOrientation="portrait"/>
     </application>
 

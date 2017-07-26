@@ -16,7 +16,7 @@ import java.util.List;
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.network.HttpCocktailListListener;
-import jp.ecweb.homes.a1601.network.HttpProductToCocktailList;
+import jp.ecweb.homes.a1601.network.HttpRequestProductToCocktailList;
 import jp.ecweb.homes.a1601.storage.SQLitePersonalBelongings;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.models.HavingProduct;
@@ -79,7 +79,7 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
 		// 所持製品テーブルから所持している製品・材料のリストを取得
 		List<HavingProduct> productList = mSQLitePersonalBelongings.getProductList();
 		// カクテル一覧の取得
-		HttpProductToCocktailList cocktailList = new HttpProductToCocktailList(this);
+		HttpRequestProductToCocktailList cocktailList = new HttpRequestProductToCocktailList(this);
 		cocktailList.setProductList(productList);
 		cocktailList.post(this);
 	}

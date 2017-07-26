@@ -43,6 +43,7 @@
     <string name="TAG_ProductID_Key">1</string>
     <string name="TAG_MaterialID_Key">2</string>
     <string name="TAG_CocktailID_Key">3</string>
+    <string name="TAG_AffiliateUrl_Key">4</string>
 
     <!-- Error Messages -->
     <string name="ERR_VolleyTitle_text">通信エラー</string>

@@ -19,7 +19,7 @@ import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.managers.VolleyManager;
 import jp.ecweb.homes.a1601.models.Cocktail;
-import jp.ecweb.homes.a1601.network.HttpCocktail;
+import jp.ecweb.homes.a1601.network.HttpRequestCocktail;
 import jp.ecweb.homes.a1601.network.HttpCocktailListener;
 import jp.ecweb.homes.a1601.utils.ExternalServicesLoader;
 
@@ -44,7 +44,7 @@ public class CocktailActivity extends AppCompatActivity {
 		Intent intent = getIntent();
 		String selectedCocktailID = intent.getStringExtra(C.EXTRA_KEY_COCKTAILID);
 		// サーバーからカクテル情報を取得
-		HttpCocktail cocktail = new HttpCocktail(this);
+		HttpRequestCocktail cocktail = new HttpRequestCocktail(this);
 		cocktail.get(selectedCocktailID, new HttpCocktailListener() {
             @Override
             public void onSuccess(Cocktail cocktail) {
