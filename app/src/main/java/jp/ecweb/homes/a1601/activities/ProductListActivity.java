@@ -3,6 +3,7 @@ package jp.ecweb.homes.a1601.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -113,9 +114,9 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	@Override
 	protected void onStart() {
 		CustomLog.d(TAG, "onStart start");
-
 		super.onStart();
-
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(findViewById(R.id.AllButton));
 		// 商品一覧の取得
 		HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
         productList.setCategory(null, null);
@@ -164,6 +165,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
      */
 	public void onAllButtonTapped(View view) {
 		CustomLog.d(TAG, "onAllButtonTapped start");
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
         // 商品一覧の取得
         HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
         productList.setCategory(null, null);
@@ -176,6 +179,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
      */
 	public void onMakerButtonTapped(View view) {
 		CustomLog.d(TAG, "onMakerButtonTapped start");
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
         // 表示用カテゴリリスト生成
 		CharSequence[] makerListItems = new CharSequence[mMakerCategoryList.size()];
 		for (int i = 0; i < mMakerCategoryList.size(); i++) {
@@ -204,6 +209,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
      */
 	public void onCategoryButtonTapped(View view) {
 		CustomLog.d(TAG, "onCategoryButtonTapped start");
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
         // 表示用カテゴリリスト生成
 		CharSequence[] categoryListItems = new CharSequence[mProductCategoryList.size()];
 		for (int i = 0; i < mProductCategoryList.size(); i++) {
@@ -232,6 +239,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
      */
 	public void onHoldButtonTapped(View view) {
 		CustomLog.d(TAG, "onHoldButtonTapped start");
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
 		// 所持商品IDを取得
 		List<HavingProduct> havingProductList = mSQLitePersonalBelongings.getProductList();
 		// 商品一覧の取得
@@ -248,6 +257,20 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
      */
     private String makeCategoryString(String name, String number) {
         return name + "  （" + number + " 件）";
+    }
+
+    /**
+     * ボタン背景色変更
+     * @param view          選択中ボタンビュー
+     */
+    private void setButtonBackgroundColor(View view) {
+        // 背景色を全て透明に戻す
+        findViewById(R.id.AllButton).setBackgroundColor(Color.TRANSPARENT);
+        findViewById(R.id.MakerButton).setBackgroundColor(Color.TRANSPARENT);
+        findViewById(R.id.CategoryButton).setBackgroundColor(Color.TRANSPARENT);
+        findViewById(R.id.HoldButton).setBackgroundColor(Color.TRANSPARENT);
+        // 選択中ボタンの背景色を変更
+        view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
     }
 /*--------------------------------------------------------------------------------------------------
 	非同期コールバック処理

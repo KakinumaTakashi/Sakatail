@@ -3,6 +3,7 @@ package jp.ecweb.homes.a1601.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -109,9 +110,9 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	@Override
 	protected void onStart() {
 		CustomLog.d(TAG, "onStart start");
-
 		super.onStart();
-
+        // ボタンの背景色を変更
+		setButtonBackgroundColor(findViewById(R.id.AllButton));
 		// カクテル一覧の取得
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
         cocktailList.setCategory(null, null);
@@ -159,6 +160,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	 * @param view  ボタンオブジェクト
 	 */
 	public void onAllButtonTapped(View view) {
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
 		// カクテル一覧の取得
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
         cocktailList.setCategory(null, null);
@@ -170,6 +173,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      * @param view  ボタンオブジェクト
      */
 	public void onJapaneseSyllabaryButtonTapped(View view) {
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
 		// 表示用カテゴリリスト生成
 		CharSequence[] items = new CharSequence[mJapaneseCategoryList.size()];
 		for (int i = 0; i < mJapaneseCategoryList.size(); i++) {
@@ -198,6 +203,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      * @param view  ボタンオブジェクト
      */
 	public void onBaseButtonTapped(View view) {
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
 		// 表示用カテゴリリスト生成
 		CharSequence[] items = new CharSequence[mBaseCategoryList.size()];
 		for (int i = 0; i < mBaseCategoryList.size(); i++) {
@@ -227,6 +234,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      * @param view  ボタンオブジェクト
      */
 	public void onFavoriteButtonTapped(View view) {
+        // ボタンの背景色を変更
+        setButtonBackgroundColor(view);
 		// カクテル一覧の取得
         HttpRequestCocktailListByFavorite cocktailList = new HttpRequestCocktailListByFavorite(this);
         cocktailList.setFavoriteList(mSQLiteFavorite.getFavoriteList());
@@ -241,6 +250,20 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      */
     private String makeCategoryString(String name, String number) {
         return name + "  （" + number + " 件）";
+    }
+
+    /**
+     * ボタン背景色変更
+     * @param view          選択中ボタンビュー
+     */
+    private void setButtonBackgroundColor(View view) {
+        // 背景色を全て透明に戻す
+        findViewById(R.id.AllButton).setBackgroundColor(Color.TRANSPARENT);
+        findViewById(R.id.JapaneseSyllabaryButton).setBackgroundColor(Color.TRANSPARENT);
+        findViewById(R.id.BaseButton).setBackgroundColor(Color.TRANSPARENT);
+        findViewById(R.id.favoriteButton).setBackgroundColor(Color.TRANSPARENT);
+        // 選択中ボタンの背景色を変更
+        view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
     }
 /*--------------------------------------------------------------------------------------------------
 	非同期コールバック
