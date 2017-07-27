@@ -62,7 +62,6 @@ public final class C {
     public static final int RSP_CD_HTTPCONNECTIONERROR      = 1003;
     public static final int RSP_CD_PARAMERROR               = 1004;
     public static final int RSP_CD_ITEMNOTFOUND             = 1005;
-
     /** SQLite **/
     public static final String TABLE_FAVORITE               = "favorite";
     public static final String COLUMN_COCKTAILID            = "CocktailID";
@@ -75,4 +74,15 @@ public final class C {
     public static final boolean LOG_INFO                    = true;
     public static final boolean LOG_WARNING                 = true;
     public static final boolean LOG_ERROR                   = true;
+    /** カテゴリ **/
+    // カクテル一覧
+    public static final int CAT_TYPE_COCKTAIL_ALL           = 1;
+    public static final int CAT_TYPE_COCKTAIL_JAPANESE      = 2;
+    public static final int CAT_TYPE_COCKTAIL_BASE          = 3;
+    public static final int CAT_TYPE_COCKTAIL_FAVORITE      = 4;
+    // 商品一覧
+    public static final int CAT_TYPE_PRODUCT_ALL            = 1;
+    public static final int CAT_TYPE_PRODUCT_MAKER          = 2;
+    public static final int CAT_TYPE_PRODUCT_CATEGORY       = 3;
+    public static final int CAT_TYPE_PRODUCT_HOLD           = 4;
 }

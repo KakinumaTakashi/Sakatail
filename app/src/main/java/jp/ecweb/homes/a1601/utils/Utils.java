@@ -1,9 +1,12 @@
 package jp.ecweb.homes.a1601.utils;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
+
+import jp.ecweb.homes.a1601.R;
 
 /**
  * ユーティリティクラス
@@ -14,8 +17,8 @@ public class Utils {
 
     /**
      * アプリケーションのバージョンを返却
-     * @param context   コンテキスト
-     * @return          バージョン番号
+     * @param context           コンテキスト
+     * @return                  バージョン番号
      */
     public static String getAppVersion(Context context) {
         String versionName = null;
@@ -29,7 +32,36 @@ public class Utils {
         return versionName;
     }
 
+    /**
+     * Stringがnullなら空文字に変換
+     * @param text              Stringオブジェクト
+     * @return                  変換結果
+     */
     public static String nullToEmpty(String text) {
         return text != null ? text : "";
+    }
+
+    /**
+     * プログレスダイアログ表示
+     * @param context           コンテキスト
+     * @return                  プログレスダイアログインスタンス
+     */
+    public static ProgressDialog startProgress(Context context) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(context.getString(R.string.Acquiring));
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        return progressDialog;
+    }
+
+    /**
+     * プログレスダイアログを閉じる
+     * @param progressDialog    プログレスダイアログインスタンス
+     */
+    public static void stopProgress(ProgressDialog progressDialog) {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 }

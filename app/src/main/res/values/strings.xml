@@ -36,6 +36,7 @@
     <string name="itemCaption_text">商品説明</string>
     <string name="showName_text">店舗名</string>
     <string name="RakutenShop">この商品を楽天で購入する</string>
+    <string name="Acquiring">取得中</string>
 
     <string name="NoImage_URL">noimage.jpg</string>
     <string name="NoThumbnail_URL">nothumbnail.jpg</string>

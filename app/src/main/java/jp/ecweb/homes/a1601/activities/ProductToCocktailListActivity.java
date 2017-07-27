@@ -1,5 +1,6 @@
 package jp.ecweb.homes.a1601.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,9 @@ import jp.ecweb.homes.a1601.models.HavingProduct;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.utils.ExternalServicesLoader;
 
+import static jp.ecweb.homes.a1601.utils.Utils.startProgress;
+import static jp.ecweb.homes.a1601.utils.Utils.stopProgress;
+
 
 public class ProductToCocktailListActivity extends AppCompatActivity implements HttpCocktailListListener {
 
@@ -31,6 +35,7 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
 	// メンバ変数
 	private CocktailListAdapter mListViewAdapter;					// アダプター格納用
 	private SQLitePersonalBelongings mSQLitePersonalBelongings;     // SQLite 所持製品テーブル操作クラス
+	private ProgressDialog mProgressDialog;                         // プログレスダイアログ
 
 	private List<Cocktail> mCocktailList = new ArrayList<>();		// リスト表示内容
 
@@ -73,9 +78,9 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
 	@Override
 	protected void onStart() {
 		CustomLog.d(TAG, "onStart start");
-
 		super.onStart();
-
+		// プログレスダイアログ表示
+		mProgressDialog = startProgress(this);
 		// 所持製品テーブルから所持している製品・材料のリストを取得
 		List<HavingProduct> productList = mSQLitePersonalBelongings.getProductList();
 		// カクテル一覧の取得
@@ -144,6 +149,8 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
         // リストを先頭に戻す
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setSelection(0);
+		// プログレスダイアログを閉じる
+		stopProgress(mProgressDialog);
     }
 
     /**
@@ -152,6 +159,8 @@ public class ProductToCocktailListActivity extends AppCompatActivity implements 
     @Override
     public void onError(int errorCode) {
         CustomLog.d(TAG, "onError start");
+		// プログレスダイアログを閉じる
+		stopProgress(mProgressDialog);
         Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text),
                 Toast.LENGTH_SHORT).show();
     }

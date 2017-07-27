@@ -1,6 +1,7 @@
 package jp.ecweb.homes.a1601.activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
+import jp.ecweb.homes.a1601.SakatailApplication;
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
@@ -30,6 +32,9 @@ import jp.ecweb.homes.a1601.network.HttpRequestCocktailListByFavorite;
 import jp.ecweb.homes.a1601.network.HttpCocktailListListener;
 import jp.ecweb.homes.a1601.utils.ExternalServicesLoader;
 
+import static jp.ecweb.homes.a1601.utils.Utils.startProgress;
+import static jp.ecweb.homes.a1601.utils.Utils.stopProgress;
+
 
 public class CocktailListActivity extends AppCompatActivity implements HttpCocktailListListener {
 
@@ -37,6 +42,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 
 	private CocktailListAdapter mListViewAdapter;					// ListViewアダプター
 	private SQLiteFavorite mSQLiteFavorite;                         // SQLite お気に入りテーブル
+    private ProgressDialog mProgressDialog;                         // プログレスダイアログ
 
 	private List<Cocktail> mCocktailList = new ArrayList<>();		// カクテル一覧
 
@@ -77,7 +83,15 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 					}
 				}
 		);
-		// 絞り込み用カテゴリ一覧の取得
+	}
+
+	@Override
+	protected void onStart() {
+		CustomLog.d(TAG, "onStart start");
+		super.onStart();
+		// プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
+        // 絞り込み用カテゴリ一覧の取得
         HttpRequestCocktailCategory categoryList = new HttpRequestCocktailCategory(this);
         categoryList.get(new HttpCocktailCategoryListener() {
             @Override
@@ -90,7 +104,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
                     category.setCount(Integer.valueOf(cocktailCategory.getCategory1NumList().get(i)));
                     mJapaneseCategoryList.add(category);
                 }
-				// ベースカテゴリ情報を設定
+                // ベースカテゴリ情報を設定
                 mBaseCategoryList = new ArrayList<>();
                 for (int i = 0; i < cocktailCategory.getCategory2List().size(); i++) {
                     Category category = new Category();
@@ -98,26 +112,44 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
                     category.setCount(Integer.valueOf(cocktailCategory.getCategory2NumList().get(i)));
                     mBaseCategoryList.add(category);
                 }
+                // 初期リストの取得
+                execInitialList();
             }
             @Override
             public void onError(int errorCode) {
-				Toast.makeText(CocktailListActivity.this,
+                Toast.makeText(CocktailListActivity.this,
                         getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
+                // 初期リストの取得
+                execInitialList();
             }
         });
-	}
+ 	}
 
-	@Override
-	protected void onStart() {
-		CustomLog.d(TAG, "onStart start");
-		super.onStart();
-        // ボタンの背景色を変更
-		setButtonBackgroundColor(findViewById(R.id.AllButton));
-		// カクテル一覧の取得
-        HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
-        cocktailList.setCategory(null, null);
-        cocktailList.post(this);
-	}
+    /**
+     * 初期リストの取得
+     */
+ 	private void execInitialList() {
+        int type = ((SakatailApplication) getApplication()).getCocktailCategoryType();
+        int index = ((SakatailApplication) getApplication()).getCocktailCategoryIndex();
+        switch (type) {
+            case C.CAT_TYPE_COCKTAIL_ALL:
+                setButtonBackgroundColor(findViewById(R.id.AllButton));
+                execPostByAll();
+                break;
+            case C.CAT_TYPE_COCKTAIL_JAPANESE:
+                setButtonBackgroundColor(findViewById(R.id.JapaneseSyllabaryButton));
+                execPostByJapanese(index);
+                break;
+            case C.CAT_TYPE_COCKTAIL_BASE:
+                setButtonBackgroundColor(findViewById(R.id.BaseButton));
+                execPostByBase(index);
+                break;
+            case C.CAT_TYPE_COCKTAIL_FAVORITE:
+                setButtonBackgroundColor(findViewById(R.id.favoriteButton));
+                execPostByFavorite();
+                break;
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -162,11 +194,23 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	public void onAllButtonTapped(View view) {
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
+        // カテゴリ選択情報を保存
+        ((SakatailApplication) getApplication()).setCocktailCategoryType(C.CAT_TYPE_COCKTAIL_ALL);
+        ((SakatailApplication) getApplication()).setCocktailCategoryIndex(-1);
 		// カクテル一覧の取得
+        execPostByAll();
+	}
+
+    /**
+     * カクテル一覧の取得(全て)
+     */
+    private void execPostByAll() {
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
         cocktailList.setCategory(null, null);
         cocktailList.post(this);
-	}
+    }
 
     /**
      * 「五十音」ボタン押下処理
@@ -175,6 +219,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	public void onJapaneseSyllabaryButtonTapped(View view) {
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
 		// 表示用カテゴリリスト生成
 		CharSequence[] items = new CharSequence[mJapaneseCategoryList.size()];
 		for (int i = 0; i < mJapaneseCategoryList.size(); i++) {
@@ -187,16 +233,26 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 		builder.setTitle("頭文字を選択");
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+			    // カテゴリ選択情報を保存
+                ((SakatailApplication) getApplication()).setCocktailCategoryType(C.CAT_TYPE_COCKTAIL_JAPANESE);
+                ((SakatailApplication) getApplication()).setCocktailCategoryIndex(which);
                 // カクテル一覧の取得
-                HttpRequestCocktailListByCategory cocktailList
-                        = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
-                cocktailList.setCategory(mJapaneseCategoryList.get(which).getValue(), null);
-                cocktailList.post(CocktailListActivity.this);
+                execPostByJapanese(which);
 			}
 		});
 		// ダイアログ表示
 		builder.show();
 	}
+
+    /**
+     * カクテル一覧の取得(五十音)
+     */
+	private void execPostByJapanese(int which) {
+        HttpRequestCocktailListByCategory cocktailList
+                = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
+        cocktailList.setCategory(mJapaneseCategoryList.get(which).getValue(), null);
+        cocktailList.post(CocktailListActivity.this);
+    }
 
     /**
      * 「ベース」ボタン押下処理
@@ -205,6 +261,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	public void onBaseButtonTapped(View view) {
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
 		// 表示用カテゴリリスト生成
 		CharSequence[] items = new CharSequence[mBaseCategoryList.size()];
 		for (int i = 0; i < mBaseCategoryList.size(); i++) {
@@ -218,16 +276,26 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
         // 表示項目・リスナーの登録
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+                // カテゴリ選択情報を保存
+                ((SakatailApplication) getApplication()).setCocktailCategoryType(C.CAT_TYPE_COCKTAIL_BASE);
+                ((SakatailApplication) getApplication()).setCocktailCategoryIndex(which);
 				// カクテル一覧の取得
-                HttpRequestCocktailListByCategory cocktailList
-                        = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
-                cocktailList.setCategory(null, mBaseCategoryList.get(which).getValue());
-                cocktailList.post(CocktailListActivity.this);
+                execPostByBase(which);
 			}
 		});
 		// ダイアログ表示
 		builder.show();
 	}
+
+    /**
+     * カクテル一覧の取得(ベース)
+     */
+    private void execPostByBase(int which) {
+        HttpRequestCocktailListByCategory cocktailList
+                = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
+        cocktailList.setCategory(null, mBaseCategoryList.get(which).getValue());
+        cocktailList.post(CocktailListActivity.this);
+    }
 
     /**
      * 「お気に入り」ボタン押下処理
@@ -236,11 +304,23 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	public void onFavoriteButtonTapped(View view) {
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
+        // カテゴリ選択情報を保存
+        ((SakatailApplication) getApplication()).setCocktailCategoryType(C.CAT_TYPE_COCKTAIL_FAVORITE);
+        ((SakatailApplication) getApplication()).setCocktailCategoryIndex(-1);
 		// カクテル一覧の取得
+        execPostByFavorite();
+	}
+
+    /**
+     * カクテル一覧の取得(お気に入り)
+     */
+    private void execPostByFavorite() {
         HttpRequestCocktailListByFavorite cocktailList = new HttpRequestCocktailListByFavorite(this);
         cocktailList.setFavoriteList(mSQLiteFavorite.getFavoriteList());
         cocktailList.post(this);
-	}
+    }
 
     /**
      * 表示用カテゴリ生成
@@ -283,6 +363,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
         // リストを先頭に戻す
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setSelection(0);
+        // プログレスダイアログを閉じる
+        stopProgress(mProgressDialog);
 	}
 
     /**
@@ -291,6 +373,8 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
     @Override
     public void onError(int errorCode) {
         CustomLog.d(TAG, "onError start");
+        // プログレスダイアログを閉じる
+        stopProgress(mProgressDialog);
         Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text),
                 Toast.LENGTH_SHORT).show();
     }

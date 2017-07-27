@@ -1,6 +1,7 @@
 package jp.ecweb.homes.a1601.activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
+import jp.ecweb.homes.a1601.SakatailApplication;
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.ProductCategory;
 import jp.ecweb.homes.a1601.network.HttpProductCategoryListener;
@@ -31,6 +33,9 @@ import jp.ecweb.homes.a1601.models.Product;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.utils.ExternalServicesLoader;
 
+import static jp.ecweb.homes.a1601.utils.Utils.startProgress;
+import static jp.ecweb.homes.a1601.utils.Utils.stopProgress;
+
 public class ProductListActivity extends AppCompatActivity implements HttpProductListListener {
 
 	private static final String TAG = ProductListActivity.class.getSimpleName();
@@ -38,6 +43,7 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
     // メンバ変数
 	private ProductListAdapter mListViewAdapter;					// アダプター格納用
 	private SQLitePersonalBelongings mSQLitePersonalBelongings;     // 所持製品テーブル操作クラス
+    private ProgressDialog mProgressDialog;                         // プログレスダイアログ
 
     private List<Product> mProductList = new ArrayList<>();         // 商品一覧
 
@@ -80,12 +86,20 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 				    }
 			    }
 	    );
-		// 絞り込み用カテゴリ一覧の取得
-		HttpRequestProductCategory categoryList = new HttpRequestProductCategory(this);
-		categoryList.get(new HttpProductCategoryListener() {
-			@Override
-			public void onSuccess(ProductCategory productCategory) {
-				// メーカーカテゴリリストを設定
+    }
+
+	@Override
+	protected void onStart() {
+		CustomLog.d(TAG, "onStart start");
+		super.onStart();
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
+        // 絞り込み用カテゴリ一覧の取得
+        HttpRequestProductCategory categoryList = new HttpRequestProductCategory(this);
+        categoryList.get(new HttpProductCategoryListener() {
+            @Override
+            public void onSuccess(ProductCategory productCategory) {
+                // メーカーカテゴリリストを設定
                 mMakerCategoryList = new ArrayList<>();
                 for (int i = 0; i < productCategory.getCategory1List().size(); i++) {
                     Category category = new Category();
@@ -103,25 +117,43 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
                     category.setCount(Integer.valueOf(productCategory.getCategory2NumList().get(i)));
                     mProductCategoryList.add(category);
                 }
-			}
-			@Override
-			public void onError(int errorCode) {
-				Toast.makeText(ProductListActivity.this, getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
-			}
-		});
-    }
-
-	@Override
-	protected void onStart() {
-		CustomLog.d(TAG, "onStart start");
-		super.onStart();
-        // ボタンの背景色を変更
-        setButtonBackgroundColor(findViewById(R.id.AllButton));
-		// 商品一覧の取得
-		HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
-        productList.setCategory(null, null);
-		productList.post(this);
+                // 初期リストの取得
+                execInitialList();
+            }
+            @Override
+            public void onError(int errorCode) {
+                Toast.makeText(ProductListActivity.this, getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
+                // 初期リストの取得
+                execInitialList();
+            }
+        });
 	}
+
+    /**
+     * 初期リストの取得
+     */
+    private void execInitialList() {
+        int type = ((SakatailApplication) getApplication()).getProductCategoryType();
+        int index = ((SakatailApplication) getApplication()).getProductCategoryIndex();
+        switch (type) {
+            case C.CAT_TYPE_PRODUCT_ALL:
+                setButtonBackgroundColor(findViewById(R.id.AllButton));
+                execPostByAll();
+                break;
+            case C.CAT_TYPE_PRODUCT_MAKER:
+                setButtonBackgroundColor(findViewById(R.id.MakerButton));
+                execPostByMaker(index);
+                break;
+            case C.CAT_TYPE_PRODUCT_CATEGORY:
+                setButtonBackgroundColor(findViewById(R.id.CategoryButton));
+                execPostByCategory(index);
+                break;
+            case C.CAT_TYPE_PRODUCT_HOLD:
+                setButtonBackgroundColor(findViewById(R.id.HoldButton));
+                execPostByHold();
+                break;
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -167,11 +199,23 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		CustomLog.d(TAG, "onAllButtonTapped start");
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
+        // カテゴリ選択情報を保存
+        ((SakatailApplication) getApplication()).setProductCategoryType(C.CAT_TYPE_PRODUCT_ALL);
+        ((SakatailApplication) getApplication()).setProductCategoryIndex(-1);
         // 商品一覧の取得
+        execPostByAll();
+	}
+
+    /**
+     * カクテル一覧の取得(全て)
+     */
+    private void execPostByAll() {
         HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
         productList.setCategory(null, null);
         productList.post(this);
-	}
+    }
 
     /**
      * 製造・販売ボタン押下処理
@@ -181,6 +225,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		CustomLog.d(TAG, "onMakerButtonTapped start");
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
         // 表示用カテゴリリスト生成
 		CharSequence[] makerListItems = new CharSequence[mMakerCategoryList.size()];
 		for (int i = 0; i < mMakerCategoryList.size(); i++) {
@@ -194,14 +240,24 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		builder.setTitle("製造/販売会社を選択");
 		builder.setItems(makerListItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+                // カテゴリ選択情報を保存
+                ((SakatailApplication) getApplication()).setProductCategoryType(C.CAT_TYPE_PRODUCT_MAKER);
+                ((SakatailApplication) getApplication()).setProductCategoryIndex(which);
                 // 商品一覧の取得
-                HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
-                productList.setCategory(mMakerCategoryList.get(which).getKey(), null);
-                productList.post(ProductListActivity.this);
+                execPostByMaker(which);
 			}
 		});
 		builder.show();
 	}
+
+    /**
+     * カクテル一覧の取得(製造・販売)
+     */
+    private void execPostByMaker(int which) {
+        HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
+        productList.setCategory(mMakerCategoryList.get(which).getKey(), null);
+        productList.post(ProductListActivity.this);
+    }
 
     /**
      * カテゴリボタン押下処理
@@ -211,6 +267,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		CustomLog.d(TAG, "onCategoryButtonTapped start");
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
         // 表示用カテゴリリスト生成
 		CharSequence[] categoryListItems = new CharSequence[mProductCategoryList.size()];
 		for (int i = 0; i < mProductCategoryList.size(); i++) {
@@ -224,14 +282,24 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		builder.setTitle("商品カテゴリを選択");
 		builder.setItems(categoryListItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
+                // カテゴリ選択情報を保存
+                ((SakatailApplication) getApplication()).setProductCategoryType(C.CAT_TYPE_PRODUCT_CATEGORY);
+                ((SakatailApplication) getApplication()).setProductCategoryIndex(which);
                 // 商品一覧の取得
-                HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
-                productList.setCategory(null, mProductCategoryList.get(which).getKey());
-                productList.post(ProductListActivity.this);
+                execPostByCategory(which);
 			}
 		});
 		builder.show();
 	}
+
+    /**
+     * カクテル一覧の取得(カテゴリ)
+     */
+    private void execPostByCategory(int which) {
+        HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
+        productList.setCategory(null, mProductCategoryList.get(which).getKey());
+        productList.post(ProductListActivity.this);
+    }
 
     /**
      * 持っているボタン押下処理
@@ -241,13 +309,24 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		CustomLog.d(TAG, "onHoldButtonTapped start");
         // ボタンの背景色を変更
         setButtonBackgroundColor(view);
-		// 所持商品IDを取得
-		List<HavingProduct> havingProductList = mSQLitePersonalBelongings.getProductList();
+        // プログレスダイアログ表示
+        mProgressDialog = startProgress(this);
+        // カテゴリ選択情報を保存
+        ((SakatailApplication) getApplication()).setProductCategoryType(C.CAT_TYPE_PRODUCT_HOLD);
+        ((SakatailApplication) getApplication()).setProductCategoryIndex(-1);
 		// 商品一覧の取得
-		HttpRequestProductListByHaving productList = new HttpRequestProductListByHaving(this);
-		productList.setHavingProductList(havingProductList);
-		productList.post(this);
+        execPostByHold();
 	}
+
+    /**
+     * カクテル一覧の取得(持っている)
+     */
+    private void execPostByHold() {
+        List<HavingProduct> havingProductList = mSQLitePersonalBelongings.getProductList();
+        HttpRequestProductListByHaving productList = new HttpRequestProductListByHaving(this);
+        productList.setHavingProductList(havingProductList);
+        productList.post(this);
+    }
 
     /**
      * 表示用カテゴリ生成
@@ -290,6 +369,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		// リストを先頭に戻す
 		ListView listView = (ListView) findViewById(R.id.listView);
 		listView.setSelection(0);
+        // プログレスダイアログを閉じる
+        stopProgress(mProgressDialog);
     }
 
     /**
@@ -299,6 +380,8 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
     @Override
     public void onError(int errorCode) {
         CustomLog.d(TAG, "onError start [errorCode:" + errorCode + "]");
+        // プログレスダイアログを閉じる
+        stopProgress(mProgressDialog);
         switch (errorCode) {
             case C.RSP_CD_HTTPCONNECTIONERROR:
                 Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text), Toast.LENGTH_SHORT).show();
