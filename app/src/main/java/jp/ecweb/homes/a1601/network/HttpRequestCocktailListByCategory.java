@@ -11,7 +11,6 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
-import jp.ecweb.homes.a1601.models.CocktailCategory;
 import jp.ecweb.homes.a1601.models.Cocktail;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 
@@ -21,7 +20,8 @@ import jp.ecweb.homes.a1601.utils.CustomLog;
 public class HttpRequestCocktailListByCategory extends HttpRequestBase {
     private static final String TAG = HttpRequestCocktailListByCategory.class.getSimpleName();
 
-    private CocktailCategory mCocktailCategory;
+    private String mJapaneseCategoryKey;
+    private String mBaseCategoryKey;
 
     /**
      * コンストラクタ
@@ -33,10 +33,12 @@ public class HttpRequestCocktailListByCategory extends HttpRequestBase {
 
     /**
      * カテゴリ設定
-     * @param cocktailCategory      カテゴリ情報
+     * @param japaneseCategory  頭文字カテゴリ情報
+     * @param baseCategory      ベースカテゴリ情報
      */
-    public void setCategory(CocktailCategory cocktailCategory) {
-        mCocktailCategory = cocktailCategory;
+    public void setCategory(String japaneseCategory, String baseCategory) {
+        mJapaneseCategoryKey = (japaneseCategory != null) ? japaneseCategory : "All";
+        mBaseCategoryKey = (baseCategory != null) ? baseCategory : "All";
     }
 
     /**
@@ -86,8 +88,8 @@ public class HttpRequestCocktailListByCategory extends HttpRequestBase {
     private JSONObject createRequest() {
         JSONObject postData = new JSONObject();
         try {
-            postData.put(C.REQ_KEY_CATEGORY1, mCocktailCategory.getCategory1());
-            postData.put(C.REQ_KEY_CATEGORY2, mCocktailCategory.getCategory2());
+            postData.put(C.REQ_KEY_CATEGORY1, mJapaneseCategoryKey);
+            postData.put(C.REQ_KEY_CATEGORY2, mBaseCategoryKey);
         } catch (JSONException e) {
             CustomLog.e(TAG, "Create request failed.", e);
             return null;

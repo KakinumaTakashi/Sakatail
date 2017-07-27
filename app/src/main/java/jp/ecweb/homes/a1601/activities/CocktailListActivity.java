@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
+import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.storage.SQLiteFavorite;
@@ -37,7 +38,9 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	private SQLiteFavorite mSQLiteFavorite;                         // SQLite お気に入りテーブル
 
 	private List<Cocktail> mCocktailList = new ArrayList<>();		// カクテル一覧
-	private CocktailCategory mCocktailCategory = new CocktailCategory();                    // 選択カテゴリ
+
+    private List<Category> mJapaneseCategoryList;					// 頭文字カテゴリリスト
+    private List<Category> mBaseCategoryList;						// ベースカテゴリリスト
 
 /*--------------------------------------------------------------------------------------------------
 	Activityイベント処理
@@ -78,8 +81,22 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
         categoryList.get(new HttpCocktailCategoryListener() {
             @Override
             public void onSuccess(CocktailCategory cocktailCategory) {
-                // カテゴリ情報を設定
-                mCocktailCategory = cocktailCategory;
+                // 頭文字カテゴリ情報を設定
+                mJapaneseCategoryList = new ArrayList<>();
+                for (int i = 0; i < cocktailCategory.getCategory1List().size(); i++) {
+                    Category category = new Category();
+                    category.setValue(cocktailCategory.getCategory1List().get(i));
+                    category.setCount(Integer.valueOf(cocktailCategory.getCategory1NumList().get(i)));
+                    mJapaneseCategoryList.add(category);
+                }
+				// ベースカテゴリ情報を設定
+                mBaseCategoryList = new ArrayList<>();
+                for (int i = 0; i < cocktailCategory.getCategory2List().size(); i++) {
+                    Category category = new Category();
+                    category.setValue(cocktailCategory.getCategory2List().get(i));
+                    category.setCount(Integer.valueOf(cocktailCategory.getCategory2NumList().get(i)));
+                    mBaseCategoryList.add(category);
+                }
             }
             @Override
             public void onError(int errorCode) {
@@ -97,7 +114,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 
 		// カクテル一覧の取得
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
-        cocktailList.setCategory(mCocktailCategory);
+        cocktailList.setCategory(null, null);
         cocktailList.post(this);
 	}
 
@@ -142,11 +159,9 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	 * @param view  ボタンオブジェクト
 	 */
 	public void onAllButtonTapped(View view) {
-		// 絞り込みをリセット
-		mCocktailCategory.resetCategoryAll();
 		// カクテル一覧の取得
         HttpRequestCocktailListByCategory cocktailList = new HttpRequestCocktailListByCategory(this);
-        cocktailList.setCategory(mCocktailCategory);
+        cocktailList.setCategory(null, null);
         cocktailList.post(this);
 	}
 
@@ -155,27 +170,22 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      * @param view  ボタンオブジェクト
      */
 	public void onJapaneseSyllabaryButtonTapped(View view) {
+		// 表示用カテゴリリスト生成
+		CharSequence[] items = new CharSequence[mJapaneseCategoryList.size()];
+		for (int i = 0; i < mJapaneseCategoryList.size(); i++) {
+			items[i] = makeCategoryString(
+					mJapaneseCategoryList.get(i).getValue(),
+					String.valueOf(mJapaneseCategoryList.get(i).getCount()));
+		}
 		// ダイアログを表示
 		AlertDialog.Builder builder = new AlertDialog.Builder(CocktailListActivity.this);
-		//ダイアログタイトルをセット
 		builder.setTitle("頭文字を選択");
-		// 表示項目の作成
-		CharSequence[] items = new CharSequence[mCocktailCategory.getCategory1List().size()];
-		for (int i = 0; i < mCocktailCategory.getCategory1List().size(); i++) {
-            items[i] = makeCategoryString(
-                    mCocktailCategory.getCategory1List().get(i),
-                    mCocktailCategory.getCategory1NumList().get(i));
-		}
-		// 表示項目・リスナーの登録
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				// 選択した五十音をセット(ベースの絞り込みは解除)
-				mCocktailCategory.setCategory1(mCocktailCategory.getCategory1List().get(which));
-				mCocktailCategory.resetCategory2();
                 // カクテル一覧の取得
                 HttpRequestCocktailListByCategory cocktailList
                         = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
-                cocktailList.setCategory(mCocktailCategory);
+                cocktailList.setCategory(mJapaneseCategoryList.get(which).getValue(), null);
                 cocktailList.post(CocktailListActivity.this);
 			}
 		});
@@ -188,27 +198,23 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
      * @param view  ボタンオブジェクト
      */
 	public void onBaseButtonTapped(View view) {
+		// 表示用カテゴリリスト生成
+		CharSequence[] items = new CharSequence[mBaseCategoryList.size()];
+		for (int i = 0; i < mBaseCategoryList.size(); i++) {
+			items[i] = makeCategoryString(
+					mBaseCategoryList.get(i).getValue(),
+					String.valueOf(mBaseCategoryList.get(i).getCount()));
+		}
 		// ダイアログを表示
 		AlertDialog.Builder builder = new AlertDialog.Builder(CocktailListActivity.this);
-		//ダイアログタイトルをセット
 		builder.setTitle("ベースを選択");
-		// 表示項目の作成
-		CharSequence[] items = new CharSequence[mCocktailCategory.getCategory2List().size()];
-		for (int i = 0; i < mCocktailCategory.getCategory2List().size(); i++) {
-            items[i] = makeCategoryString(
-                    mCocktailCategory.getCategory2List().get(i),
-                    mCocktailCategory.getCategory2NumList().get(i));
-		}
         // 表示項目・リスナーの登録
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				// 選択したベースをセット(五十音の絞り込みは解除)
-				mCocktailCategory.resetCategory1();
-				mCocktailCategory.setCategory2(mCocktailCategory.getCategory2List().get(which));
 				// カクテル一覧の取得
                 HttpRequestCocktailListByCategory cocktailList
                         = new HttpRequestCocktailListByCategory(CocktailListActivity.this);
-                cocktailList.setCategory(mCocktailCategory);
+                cocktailList.setCategory(null, mBaseCategoryList.get(which).getValue());
                 cocktailList.post(CocktailListActivity.this);
 			}
 		});

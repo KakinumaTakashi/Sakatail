@@ -17,6 +17,7 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
+import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.models.ProductCategory;
 import jp.ecweb.homes.a1601.network.HttpProductCategoryListener;
 import jp.ecweb.homes.a1601.network.HttpRequestProductCategory;
@@ -38,7 +39,9 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	private SQLitePersonalBelongings mSQLitePersonalBelongings;     // 所持製品テーブル操作クラス
 
     private List<Product> mProductList = new ArrayList<>();         // 商品一覧
-	private ProductCategory mProductCategory = new ProductCategory();                    // 選択カテゴリ
+
+    private List<Category> mMakerCategoryList;                      // メーカーカテゴリリスト
+    private List<Category> mProductCategoryList;                    // 商品カテゴリリスト
 
 /*--------------------------------------------------------------------------------------------------
     Activityイベント処理
@@ -55,8 +58,7 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 	    // メンバ変数の初期化
 	    mSQLitePersonalBelongings = new SQLitePersonalBelongings(this);
 	    // ListViewのアダプターを登録
-	    mListViewAdapter = new ProductListAdapter(getBaseContext(),
-			    R.layout.activity_product_list_item, mProductList);
+	    mListViewAdapter = new ProductListAdapter(getBaseContext(), R.layout.activity_product_list_item, mProductList);
 		ListView listView = (ListView) findViewById(R.id.listView);
 	    listView.setAdapter(mListViewAdapter);
 		// アイテムタップ時のリスナーを登録
@@ -82,13 +84,28 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		categoryList.get(new HttpProductCategoryListener() {
 			@Override
 			public void onSuccess(ProductCategory productCategory) {
-				// カテゴリ情報を設定
-				mProductCategory = productCategory;
+				// メーカーカテゴリリストを設定
+                mMakerCategoryList = new ArrayList<>();
+                for (int i = 0; i < productCategory.getCategory1List().size(); i++) {
+                    Category category = new Category();
+                    category.setValue(productCategory.getCategory1List().get(i));
+                    category.setKey(productCategory.getCategory1ValueList().get(i));
+                    category.setCount(Integer.valueOf(productCategory.getCategory1NumList().get(i)));
+                    mMakerCategoryList.add(category);
+                }
+                // 商品カテゴリリストを設定
+                mProductCategoryList = new ArrayList<>();
+                for (int i = 0; i < productCategory.getCategory2List().size(); i++) {
+                    Category category = new Category();
+                    category.setValue(productCategory.getCategory2List().get(i));
+                    category.setKey(productCategory.getCategory2ValueList().get(i));
+                    category.setCount(Integer.valueOf(productCategory.getCategory2NumList().get(i)));
+                    mProductCategoryList.add(category);
+                }
 			}
 			@Override
 			public void onError(int errorCode) {
-				Toast.makeText(ProductListActivity.this,
-						getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
+				Toast.makeText(ProductListActivity.this, getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
 			}
 		});
     }
@@ -101,7 +118,7 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 
 		// 商品一覧の取得
 		HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
-		productList.setCategory(mProductCategory);
+        productList.setCategory(null, null);
 		productList.post(this);
 	}
 
@@ -141,101 +158,82 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 /*--------------------------------------------------------------------------------------------------
 	ボタンタップイベント処理
 --------------------------------------------------------------------------------------------------*/
-	// 全て
+    /**
+     * 全てボタン押下処理
+     * @param view          ボタンビュー
+     */
 	public void onAllButtonTapped(View view) {
 		CustomLog.d(TAG, "onAllButtonTapped start");
-
-		// 絞り込みをリセット
-		mProductCategory.resetCategoryAll();
-
         // 商品一覧の取得
         HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(this);
-        productList.setCategory(mProductCategory);
+        productList.setCategory(null, null);
         productList.post(this);
 	}
 
-	// 製造・販売
+    /**
+     * 製造・販売ボタン押下処理
+     * @param view          ボタンビュー
+     */
 	public void onMakerButtonTapped(View view) {
 		CustomLog.d(TAG, "onMakerButtonTapped start");
-
-		CharSequence[] makerListItems = new CharSequence[mProductCategory.getCategory1List().size()];
-
-		for (int i = 0; i < mProductCategory.getCategory1List().size(); i++) {
+        // 表示用カテゴリリスト生成
+		CharSequence[] makerListItems = new CharSequence[mMakerCategoryList.size()];
+		for (int i = 0; i < mMakerCategoryList.size(); i++) {
             makerListItems[i] = makeCategoryString(
-                    mProductCategory.getCategory1List().get(i),
-                    mProductCategory.getCategory1NumList().get(i)
+                    mMakerCategoryList.get(i).getValue(),
+                    String.valueOf(mMakerCategoryList.get(i).getCount())
             );
         }
-
 		// ダイアログを表示
-		AlertDialog.Builder builder =
-				new AlertDialog.Builder(ProductListActivity.this);
-
-		//ダイアログタイトルをセット
+		AlertDialog.Builder builder = new AlertDialog.Builder(ProductListActivity.this);
 		builder.setTitle("製造/販売会社を選択");
-
-		// 表示項目とリスナの設定
 		builder.setItems(makerListItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				// 選択した製造/販売会社をセット(カテゴリの絞り込みは解除)
-				mProductCategory.setCategory1(mProductCategory.getCategory1ValueList().get(which));
-				mProductCategory.resetCategory2();
-
                 // 商品一覧の取得
                 HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
-                productList.setCategory(mProductCategory);
+                productList.setCategory(mMakerCategoryList.get(which).getKey(), null);
                 productList.post(ProductListActivity.this);
 			}
 		});
-
 		builder.show();
 	}
 
-	// 材料カテゴリ
+    /**
+     * カテゴリボタン押下処理
+     * @param view          ボタンビュー
+     */
 	public void onCategoryButtonTapped(View view) {
 		CustomLog.d(TAG, "onCategoryButtonTapped start");
-
-		CharSequence[] categoryListItems = new CharSequence[mProductCategory.getCategory2List().size()];
-
-		for (int i = 0; i < mProductCategory.getCategory2List().size(); i++) {
-			// 表示用文字列構築
+        // 表示用カテゴリリスト生成
+		CharSequence[] categoryListItems = new CharSequence[mProductCategoryList.size()];
+		for (int i = 0; i < mProductCategoryList.size(); i++) {
             categoryListItems[i] = makeCategoryString(
-                    mProductCategory.getCategory2List().get(i),
-                    mProductCategory.getCategory2NumList().get(i)
+                    mProductCategoryList.get(i).getValue(),
+                    String.valueOf(mProductCategoryList.get(i).getCount())
             );
 		}
-
 		// ダイアログを表示
-		AlertDialog.Builder builder =
-				new AlertDialog.Builder(ProductListActivity.this);
-
-		//ダイアログタイトルをセット
-		builder.setTitle("材料カテゴリを選択");
-
-		// 表示項目とリスナの設定
+		AlertDialog.Builder builder = new AlertDialog.Builder(ProductListActivity.this);
+		builder.setTitle("商品カテゴリを選択");
 		builder.setItems(categoryListItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				// 選択した材料カテゴリをセット(製造/販売会社の絞り込みは解除)
-				mProductCategory.resetCategory1();
-				mProductCategory.setCategory2(mProductCategory.getCategory2ValueList().get(which));
-
                 // 商品一覧の取得
                 HttpRequestProductListByCategory productList = new HttpRequestProductListByCategory(ProductListActivity.this);
-                productList.setCategory(mProductCategory);
+                productList.setCategory(null, mProductCategoryList.get(which).getKey());
                 productList.post(ProductListActivity.this);
 			}
 		});
-
 		builder.show();
 	}
 
-	// 持っている
+    /**
+     * 持っているボタン押下処理
+     * @param view          ボタンビュー
+     */
 	public void onHoldButtonTapped(View view) {
 		CustomLog.d(TAG, "onHoldButtonTapped start");
-
 		// 所持商品IDを取得
 		List<HavingProduct> havingProductList = mSQLitePersonalBelongings.getProductList();
-
 		// 商品一覧の取得
 		HttpRequestProductListByHaving productList = new HttpRequestProductListByHaving(this);
 		productList.setHavingProductList(havingProductList);
@@ -254,6 +252,10 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 /*--------------------------------------------------------------------------------------------------
 	非同期コールバック処理
 --------------------------------------------------------------------------------------------------*/
+    /**
+     * 商品一覧取得処理の正常終了コールバック
+     * @param productList   商品一覧
+     */
     @Override
     public void onSuccess(List<Product> productList) {
 		CustomLog.d(TAG, "onSuccess start");
@@ -267,11 +269,20 @@ public class ProductListActivity extends AppCompatActivity implements HttpProduc
 		listView.setSelection(0);
     }
 
+    /**
+     * 商品一覧取得処理の異常終了コールバック
+     * @param errorCode     エラーコード
+     */
     @Override
     public void onError(int errorCode) {
-        CustomLog.d(TAG, "onError start");
-        Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text),
-                Toast.LENGTH_SHORT).show();
+        CustomLog.d(TAG, "onError start [errorCode:" + errorCode + "]");
+        switch (errorCode) {
+            case C.RSP_CD_HTTPCONNECTIONERROR:
+                Toast.makeText(this, getString(R.string.ERR_VolleyMessage_text), Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(this, getString(R.string.ERR_DownloadCategoryFailure), Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }
-

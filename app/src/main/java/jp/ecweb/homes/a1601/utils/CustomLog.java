@@ -7,6 +7,7 @@ import jp.ecweb.homes.a1601.C;
 /**
  * カスタムログクラス
  */
+@SuppressWarnings("UnusedDeclaration")
 public class CustomLog {
     private static final String TAG = "Sakatail";
     private CustomLog(){}

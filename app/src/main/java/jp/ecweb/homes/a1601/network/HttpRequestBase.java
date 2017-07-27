@@ -81,6 +81,7 @@ public class HttpRequestBase {
     private void sendRequest(int action, String url, final JSONObject request, final HttpRequestListener listener) {
         // Volleyリクエストの作成
         if (C.DEBUG_MODE) CustomLog.d(TAG, "WEB API URL=" + url);
+        if (C.DEBUG_MODE) CustomLog.d(TAG, "Request [" + (request != null ? request.toString() : "") + "]");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 action, url, request,
                 new Response.Listener<JSONObject>() {

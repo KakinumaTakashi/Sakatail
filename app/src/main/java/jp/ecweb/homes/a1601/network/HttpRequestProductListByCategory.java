@@ -12,7 +12,6 @@ import java.util.List;
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.R;
 import jp.ecweb.homes.a1601.models.Product;
-import jp.ecweb.homes.a1601.models.ProductCategory;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 
 /**
@@ -21,7 +20,8 @@ import jp.ecweb.homes.a1601.utils.CustomLog;
 public class HttpRequestProductListByCategory extends HttpRequestBase {
     private static final String TAG = HttpRequestProductListByCategory.class.getSimpleName();
 
-    private ProductCategory mProductCategory;
+    private String mMakerCategoryKey;
+    private String mProductCategoryKey;
 
     /**
      * コンストラクタ
@@ -33,10 +33,12 @@ public class HttpRequestProductListByCategory extends HttpRequestBase {
 
     /**
      * カテゴリ設定
-     * @param productCategory      カテゴリ情報
+     * @param makerCategoryKey      メーカーカテゴリ情報
+     * @param productCategoryKey    商品カテゴリ情報
      */
-    public void setCategory(ProductCategory productCategory) {
-        mProductCategory = productCategory;
+    public void setCategory(String makerCategoryKey, String productCategoryKey) {
+        mMakerCategoryKey = (makerCategoryKey != null) ? makerCategoryKey : "All";
+        mProductCategoryKey = (productCategoryKey != null) ? productCategoryKey : "All";
     }
 
     /**
@@ -86,13 +88,12 @@ public class HttpRequestProductListByCategory extends HttpRequestBase {
     private JSONObject createRequest() {
         JSONObject postData = new JSONObject();
         try {
-            postData.put(C.REQ_KEY_MAKER, mProductCategory.getCategory1());
-            postData.put(C.REQ_KEY_MATERIALID, mProductCategory.getCategory2());
+            postData.put(C.REQ_KEY_MAKER, mMakerCategoryKey);
+            postData.put(C.REQ_KEY_MATERIALID, mProductCategoryKey);
         } catch (JSONException e) {
             CustomLog.e(TAG, "Create request failed.", e);
             return null;
         }
         return postData;
     }
-
 }
