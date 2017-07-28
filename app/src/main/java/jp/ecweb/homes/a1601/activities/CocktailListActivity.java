@@ -1,11 +1,15 @@
 package jp.ecweb.homes.a1601.activities;
 
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +23,7 @@ import java.util.List;
 
 import jp.ecweb.homes.a1601.C;
 import jp.ecweb.homes.a1601.SakatailApplication;
+import jp.ecweb.homes.a1601.fragments.CocktailListFilterFragment;
 import jp.ecweb.homes.a1601.models.Category;
 import jp.ecweb.homes.a1601.utils.CustomLog;
 import jp.ecweb.homes.a1601.R;
@@ -36,7 +41,8 @@ import static jp.ecweb.homes.a1601.utils.Utils.startProgress;
 import static jp.ecweb.homes.a1601.utils.Utils.stopProgress;
 
 
-public class CocktailListActivity extends AppCompatActivity implements HttpCocktailListListener {
+public class CocktailListActivity extends AppCompatActivity
+        implements HttpCocktailListListener, CocktailListFilterFragment.FilterListener {
 
 	private static final String TAG = CocktailListActivity.class.getSimpleName();
 
@@ -52,7 +58,7 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 /*--------------------------------------------------------------------------------------------------
 	Activityイベント処理
 --------------------------------------------------------------------------------------------------*/
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		CustomLog.d(TAG, "onCreate start");
 
@@ -168,10 +174,21 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-
 		// リソースの登録
 		getMenuInflater().inflate(R.menu.menu_cocktail_list, menu);
 		// タップリスナーの登録
+        // フィルタ
+        menu.findItem(R.id.app_bar_search).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        CocktailListFilterFragment dialog = new CocktailListFilterFragment();
+                        dialog.setType(((SakatailApplication) getApplication()).getCocktailCategoryType());
+                        dialog.setIndex(((SakatailApplication) getApplication()).getCocktailCategoryIndex());
+                        dialog.show(CocktailListActivity.this.getFragmentManager(), "CocktailListFilterFragment");
+                        return true;
+                    }
+        });
 		// 戻る
 		menu.findItem(R.id.menu_back).setOnMenuItemClickListener(
 				new MenuItem.OnMenuItemClickListener() {
@@ -187,7 +204,26 @@ public class CocktailListActivity extends AppCompatActivity implements HttpCockt
 /*--------------------------------------------------------------------------------------------------
 	ボタンタップイベント処理
 --------------------------------------------------------------------------------------------------*/
-	/**
+
+    @Override
+    public void onCloseButtonTapped(DialogFragment dialog, int type, String key) {
+        switch (type) {
+            case C.CAT_TYPE_COCKTAIL_ALL:
+                execPostByAll();
+                break;
+            case C.CAT_TYPE_COCKTAIL_JAPANESE:
+                execPostByJapanese(0); // todo
+                break;
+            case C.CAT_TYPE_COCKTAIL_BASE:
+                execPostByBase(0); // todo
+                break;
+            case C.CAT_TYPE_COCKTAIL_FAVORITE:
+                execPostByFavorite();
+                break;
+        }
+    }
+
+    /**
 	 * 「全て」ボタン押下処理
 	 * @param view  ボタンオブジェクト
 	 */
